@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "51993492082",
+    "project_id": "firebase-eatogether"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51993492082:android:b09ad9852297e49c",
+        "android_client_info": {
+          "package_name": "com.applicoders.msp_2017_project.eatogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51993492082-96qouqpg5hr48ki37g6ddlkisesa5ksl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.applicoders.msp_2017_project.eatogether",
+            "certificate_hash": "e9dd0733ad008acd6dc14ca28d8d7d596cd4df07"
+          }
+        },
+        {
+          "client_id": "51993492082-ade0iflqmg9l9e7m0lce6j8vo7u5bhva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHbc1_OHSXwvL7mWtuMYuulvyiWHJfDNw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
