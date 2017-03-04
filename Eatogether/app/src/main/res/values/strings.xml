@@ -18,5 +18,11 @@
     <string name="sign_in_err">Unable to Sign-In</string>
     <string name="loading">Loading...</string>
     <string name="facebook_app_id">249784052093955</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

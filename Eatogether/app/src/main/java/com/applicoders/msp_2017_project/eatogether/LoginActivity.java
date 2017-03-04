@@ -4,12 +4,12 @@ package com.applicoders.msp_2017_project.eatogether;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -39,10 +39,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -50,17 +54,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A login screen that offers login via email/password.
@@ -89,16 +91,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    CallbackManager callbackManager;
-
+    private CallbackManager callbackManager;
+    private  LoginButton loginButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
+//        facebookSDKInitialize();
         setContentView(R.layout.activity_login);
-        //Facebook Login
         facebookSDKInitialize();
-
-
         //Google Sign-In
 
         findViewById(R.id.google_sign_in_button).setOnClickListener(this);
@@ -144,8 +147,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        showProgressDialog();
     }
 
     private void populateAutoComplete() {
@@ -416,31 +417,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onStart() {
         super.onStart();
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            // If the user has not previously signed in on this device or the sign-in has expired,
-            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-            // single sign-on will occur in this branch.
-            showProgressDialog();
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    hideProgressDialog();
-                    handleSignInResult(googleSignInResult);
-                }
-            });
-        }
+//        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+//        if (opr.isDone()) {
+//            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+//            // and the GoogleSignInResult will be available instantly.
+//            Log.d(TAG, "Got cached sign-in");
+//            GoogleSignInResult result = opr.get();
+//            handleSignInResult(result);
+//        } else {
+//            // If the user has not previously signed in on this device or the sign-in has expired,
+//            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+//            // single sign-on will occur in this branch.
+//            showProgressDialog();
+//            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+//                @Override
+//                public void onResult(GoogleSignInResult googleSignInResult) {
+//                    hideProgressDialog();
+//                    handleSignInResult(googleSignInResult);
+//                }
+//            });
+//        }
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
+            hideProgressDialog();
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 //            String personName = acct.getDisplayName();
@@ -450,9 +452,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            String personId = acct.getId();
 //            Uri personPhoto = acct.getPhotoUrl();
             Toast.makeText(this, "Signed-In", Toast.LENGTH_LONG).show();
+            Intent newactivity = new Intent(this, MainActivity.class);
+            startActivity(newactivity);
 
         } else {
             // Signed out, show unauthenticated UI.
+            hideProgressDialog();
             Toast.makeText(this, "Signed-Fail", Toast.LENGTH_LONG).show();
         }
     }
@@ -460,6 +465,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -488,32 +494,50 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     public void onClick(View v) {
+        showProgressDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+
+
+
     //Facebook Login
     public void facebookSDKInitialize() {
-        callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.facebook_login_button);
-        loginButton.setReadPermissions("email");
-
-
-        // Callback registration
+        loginButton = (LoginButton)findViewById(R.id.facebook_login_button);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.v("Main", response.toString());
+                                try{
+                                    Toast.makeText(getApplicationContext(), object.getString("gender"), Toast.LENGTH_LONG).show();
+                                } catch (JSONException e){
+                                    Log.v("JsonEXCEPTION ", e.getMessage());
+                                }
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,gender, birthday");
+                request.setParameters(parameters);
+                request.executeAsync();
+                Toast.makeText(getApplicationContext(), "Login", Toast.LENGTH_LONG).show();
+
             }
 
             @Override
             public void onCancel() {
-                // App code
+                Toast.makeText(getApplicationContext(), "Login Cancelled", Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onError(FacebookException exception) {
-                // App code
+            public void onError(FacebookException e) {
+                Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
