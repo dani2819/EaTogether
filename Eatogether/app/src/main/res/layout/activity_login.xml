@@ -11,6 +11,12 @@
     android:id="@+id/LoginLayout"
     tools:context="com.applicoders.msp_2017_project.eatogether.LoginActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:textSize="50dp"/>
+
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -18,14 +24,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginTop="100dp"/>
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:textSize="50dp"/>
 
     <ScrollView
         android:id="@+id/login_form"
@@ -98,12 +99,14 @@
                 android:layout_marginTop="15dp"/>
 
             <TextView
+                android:id="@+id/btn_forgot_pass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Forgot Password?"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="160dp"
-                android:textColor="@color/Blue"/>
+                android:textColor="@color/Blue"
+                android:clickable="true"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

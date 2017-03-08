@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private CallbackManager callbackManager;
     private  LoginButton loginButton;
+    private TextView mForgotPassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +150,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mForgotPassword = (TextView) findViewById(R.id.btn_forgot_pass);
+
+//        mForgotPassword.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                Toast.makeText(getApplicationContext(), "HELLEPOEKEF", Toast.LENGTH_LONG).show();
+//                Intent newactivity = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+//                startActivity(newactivity);
+//                return true;
+//            }
+//        });
+
+        mForgotPassword.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newactivity = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+                startActivity(newactivity);
+            }
+        });
+
     }
 
     private void populateAutoComplete() {
@@ -442,7 +465,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            hideProgressDialog();
+            showProgress(false);
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 //            String personName = acct.getDisplayName();
@@ -457,7 +480,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         } else {
             // Signed out, show unauthenticated UI.
-            hideProgressDialog();
+            showProgress(false);
+//            hideProgressDialog();
             Toast.makeText(this, "Signed-Fail", Toast.LENGTH_LONG).show();
         }
     }
@@ -494,7 +518,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     public void onClick(View v) {
-        showProgressDialog();
+        showProgress(true);
+//        showProgressDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
