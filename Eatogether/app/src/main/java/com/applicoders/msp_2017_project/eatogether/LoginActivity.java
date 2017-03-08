@@ -452,7 +452,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            String personId = acct.getId();
 //            Uri personPhoto = acct.getPhotoUrl();
             Toast.makeText(this, "Signed-In", Toast.LENGTH_LONG).show();
-            Intent newactivity = new Intent(this, MainActivity.class);
+            Intent newactivity = new Intent(this, SignUpActivity.class);
             startActivity(newactivity);
 
         } else {
