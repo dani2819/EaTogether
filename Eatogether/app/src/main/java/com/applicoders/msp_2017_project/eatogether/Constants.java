@@ -9,7 +9,9 @@ public class Constants {
 
     }
 
-    public static final String SERVER_HOST = "";
+    public static String TOKEN = "";
+
+    public static final String SERVER_HOST = "http://eatogather.herokuapp.com/";
 
     public static final int SERVER_PORT = 0;
 
@@ -17,5 +19,5 @@ public class Constants {
 
     public static final String SERVER_RESOURCE_LOGOUT = "logout";
 
-    public static final String SERVER_RESOURCE_SIGNUP = "signup";
+    public static final String SERVER_RESOURCE_SIGNUP = "users/signup";
 }

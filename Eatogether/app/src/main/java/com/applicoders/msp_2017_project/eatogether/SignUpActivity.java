@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.telecom.Call;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +34,9 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_HOST;
@@ -39,6 +44,12 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_PORT;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGIN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGOUT;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_SIGNUP;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
+
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.Md5Hash;
+import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -49,8 +60,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     private View mProgressView;
     private View mSignUpFormView;
-    private EditText mfirstName, mlastName, mEmailAddress, mPassword, mReEnterPass, mTelephone;
-    private String mGender = "";
+    private EditText mfirstName, mlastName, mUsername, mEmailAddress, mPassword, mReEnterPass, mTelephone;
+    private String mGender = "-10";
     private Button mSignUpBtn;
     private UserSignUpTask mAuthTask = null;
 
@@ -63,7 +74,6 @@ public class SignUpActivity extends AppCompatActivity {
         mSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("Button CLicked", "Trueeee");
                 attemptSignUp();
             }
         });
@@ -77,13 +87,13 @@ public class SignUpActivity extends AppCompatActivity {
             case R.id.rb_male:
                 if (checked) {
                     Toast.makeText(this, "Male Button Clicked", Toast.LENGTH_LONG).show();
-                    mGender = "Male";
+                    mGender = "1";
                     break;
                 }
             case R.id.rb_female:
                 if (checked) {
                     Toast.makeText(this, "Female Button Clicked", Toast.LENGTH_LONG).show();
-                    mGender = "Female";
+                    mGender = "0";
                     break;
                 }
         }
@@ -94,10 +104,11 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        JSONObject json;
+        HashMap<String, String> keyValuePair = new HashMap<String, String>();
         // Reset errors.
         mfirstName.setError(null);
         mlastName.setError(null);
+        mUsername.setError(null);
         mEmailAddress.setError(null);
         mPassword.setError(null);
         mReEnterPass.setError(null);
@@ -106,6 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         String FirstName = mfirstName.getText().toString();
         String LastName = mlastName.getText().toString();
+        String Username = mUsername.getText().toString();
         String email = mEmailAddress.getText().toString();
         String password = mPassword.getText().toString();
         String Telephone = mTelephone.getText().toString();
@@ -124,6 +136,18 @@ public class SignUpActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(LastName)){
             mlastName.setError(getString(R.string.error_field_required));
             focusView = mlastName;
+            cancel = true;
+        }
+
+        if(TextUtils.isEmpty(Username)){
+            mUsername.setError(getString(R.string.error_field_required));
+            focusView = mUsername;
+            cancel = true;
+        }
+
+        if(!isUsernameValid(Username)){
+            mUsername.setError(getString(R.string.error_invalid_username));
+            focusView = mUsername;
             cancel = true;
         }
 
@@ -177,20 +201,28 @@ public class SignUpActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             try {
-                json = new JSONObject();
-                json.put("Firstname", FirstName);
-                json.put("Lastname", LastName);
-                json.put("Email", email);
-                json.put("Telephone", Telephone);
-                json.put("Gender", mGender);
-                Log.v("Json ", json.toString());
+                keyValuePair.put("first_name", FirstName);
+                keyValuePair.put("last_name", LastName);
+                keyValuePair.put("username", Username);
+                keyValuePair.put("password", password);
+                keyValuePair.put("email", email);
+                keyValuePair.put("telephone", Telephone);
+                keyValuePair.put("gender", mGender);
             }
-            catch (JSONException e){
+            catch (Exception e){
 
             }
 
-            mAuthTask = new SignUpActivity.UserSignUpTask(FirstName, LastName, Telephone, email, password, mGender);
-            mAuthTask.execute((Void) null);
+            String response = "";
+//            try {
+//                response = httpLogin(keyValuePair);
+//                Log.d("RESponse :  ???  ", response);
+//            }
+//            catch (Exception e){
+//
+//            }
+            mAuthTask = new SignUpActivity.UserSignUpTask(keyValuePair, "POST", SERVER_RESOURCE_SIGNUP);
+            mAuthTask.execute();
         }
 
     }
@@ -211,9 +243,14 @@ public class SignUpActivity extends AppCompatActivity {
         return matcher.matches();
     }
 
+    private boolean isUsernameValid(String username){
+        return username.length()>=6? true : false;
+    }
+
     private void initViews(){
         mfirstName = (EditText) findViewById(R.id.first_name);
         mlastName = (EditText) findViewById(R.id.last_name);
+        mUsername = (EditText) findViewById(R.id.username_signup);
         mEmailAddress = (EditText) findViewById(R.id.email_signup);
         mPassword = (EditText) findViewById(R.id.password_signup);
         mReEnterPass = (EditText) findViewById(R.id.repassword_signup);
@@ -223,97 +260,50 @@ public class SignUpActivity extends AppCompatActivity {
         mSignUpFormView = findViewById(R.id.signup_form);
     }
 
-
-    protected String readStream(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-        Reader reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-
-        reader.read(buffer);
-        return new String(buffer);
-    }
-
-    protected String httpLogin(String username, String password) throws IOException {
-        InputStream is = null;
-
-        try {
-            URL url = new URL("http", SERVER_HOST, SERVER_PORT, SERVER_RESOURCE_LOGIN);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.connect();
-
-            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-            os.write("username=" + username + "&password=" + password);
-            os.flush();
-            os.close();
-
-            Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
-
-            is = conn.getInputStream();
-            int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
-
-            return readStream(is, len);
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-
     //Async Task for SignUp
-    public class UserSignUpTask extends AsyncTask<Void, Void, Boolean> {
-        private final String FirstName;
-        private final String LastName;
-        private final String Telephone;
-        private final String Email;
-        private final String Password;
-        private final String Gender;
-
-        UserSignUpTask(String Fname, String Lname, String Tphone, String email, String password, String gender) {
-            FirstName = Fname;
-            LastName = Lname;
-            Telephone = Tphone;
-            Email = email;
-            Password = password;
-            Gender = gender;
+    protected class UserSignUpTask extends AsyncTask<Void, Void, String> {
+        private final HashMap KVP;
+        private final String CallType;
+        private final String ServerResource;
+        UserSignUpTask(HashMap _KVP, String _Calltype, String _serverResource) {
+            KVP = _KVP;
+            CallType = _Calltype;
+            ServerResource = _serverResource;
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
+        @Override
+        protected String doInBackground(Void... params) {
             try {
-                // Simulate network access.
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                return false;
+                return GenHttpConnection.HttpCall(KVP, CallType, ServerResource);
+            } catch (Exception e) {
+                return "{\"error\":true}";
             }
-
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
-
-            // TODO: register the new account here.
-            return true;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(String result) {
+            Log.i("A", "Backend response: " + result);
             mAuthTask = null;
             showProgress(false);
+            try{
+                JSONObject jsonObj = new JSONObject(result);
+                if (jsonObj.has("error")) {
+                    throw new Exception();
+                }
 
-            if (success) {
-                finish();
-            } else {
-                mPassword.setError(getString(R.string.error_incorrect_password));
-                mPassword.requestFocus();
+                if(jsonObj.getBoolean("success")){
+                    TOKEN = jsonObj.getString("message");
+                    Toast.makeText(getApplicationContext(), "Token: " + TOKEN, Toast.LENGTH_LONG).show();
+                    Log.e("Token: ", TOKEN.toString());
+                    mSignUpFormView.setVisibility(View.GONE);
+                    // TODO: Store token and Start New Activity.
+                }
+
+
+            }
+            catch (Exception e){
+                Log.e("Exception", e.toString());
             }
         }
 

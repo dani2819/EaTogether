@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -40,10 +41,12 @@ import android.widget.Toast;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
+import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -65,6 +68,8 @@ import com.facebook.login.widget.LoginButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGIN;
 
 /**
  * A login screen that offers login via email/password.
@@ -151,16 +156,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mForgotPassword = (TextView) findViewById(R.id.btn_forgot_pass);
-
-//        mForgotPassword.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                Toast.makeText(getApplicationContext(), "HELLEPOEKEF", Toast.LENGTH_LONG).show();
-//                Intent newactivity = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
-//                startActivity(newactivity);
-//                return true;
-//            }
-//        });
 
         mForgotPassword.setOnClickListener(new OnClickListener() {
             @Override
@@ -263,7 +258,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            // TODO: Add Token as well from sharedprefs in the Hashmap to send in POST call
+            HashMap<String, String> keyValuePair = new HashMap<String, String>();
+            keyValuePair.put("username", email);
+            keyValuePair.put("password", password);
+            mAuthTask = new UserLoginTask(keyValuePair, "POST", SERVER_RESOURCE_LOGIN);
             mAuthTask.execute((Void) null);
         }
     }
@@ -372,49 +371,47 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, String> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private final HashMap KVP;
+        private final String CallType;
+        private final String ServerResource;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        UserLoginTask(HashMap _KVP, String _CallType, String _serverResource) {
+            KVP = _KVP;
+            CallType = _CallType;
+            ServerResource = _serverResource;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                return GenHttpConnection.HttpCall(KVP, CallType, ServerResource);
+            } catch (Exception e) {
+                return "{\"error\":true}";
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(String result) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+            try {
+                JSONObject jsonObj = new JSONObject(result);
+                if (jsonObj.has("error")) {
+                    throw new Exception();
+                }
+                if (jsonObj.getBoolean("success")) {
+
+                } else {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+            } catch (Exception e){
+                Log.v("Error", e.toString());
             }
         }
 
