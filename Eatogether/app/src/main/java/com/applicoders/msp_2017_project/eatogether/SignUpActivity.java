@@ -151,14 +151,14 @@ public class SignUpActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if(TextUtils.isEmpty(Telephone)){
-            mTelephone.setError(getString(R.string.error_field_required));
-            focusView = mTelephone;
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailAddress.setError(getString(R.string.error_field_required));
+            focusView = mEmailAddress;
             cancel = true;
-        }
-
-        if(TextUtils.isEmpty(mGender)){
-            Toast.makeText(this, "Select Gender", Toast.LENGTH_LONG).show();
+        } else if (!isEmailValid(email)) {
+            mEmailAddress.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailAddress;
             cancel = true;
         }
 
@@ -181,14 +181,14 @@ public class SignUpActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailAddress.setError(getString(R.string.error_field_required));
-            focusView = mEmailAddress;
+        if(TextUtils.isEmpty(Telephone)){
+            mTelephone.setError(getString(R.string.error_field_required));
+            focusView = mTelephone;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailAddress.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailAddress;
+        }
+
+        if(TextUtils.isEmpty(mGender)){
+            Toast.makeText(this, "Select Gender", Toast.LENGTH_LONG).show();
             cancel = true;
         }
 

@@ -45,6 +45,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.google.android.gms:play-services:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
     testCompile 'junit:junit:4.12'
 }
 

@@ -15,6 +15,8 @@ public class Constants {
 
     public static final int SERVER_PORT = 0;
 
+    public static final String MyPREFERENCES = "MyPrefs" ;
+
     public static final String SERVER_RESOURCE_LOGIN = "login";
 
     public static final String SERVER_RESOURCE_LOGOUT = "logout";
