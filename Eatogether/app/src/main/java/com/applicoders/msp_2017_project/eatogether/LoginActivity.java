@@ -52,8 +52,6 @@ import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
-import com.facebook.ProfileTracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -477,7 +475,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            String personId = acct.getId();
 //            Uri personPhoto = acct.getPhotoUrl();
             Toast.makeText(this, "Signed-In", Toast.LENGTH_LONG).show();
-            Intent newactivity = new Intent(this, SignUpActivity.class);
+            Intent newactivity = new Intent(this, HomeActivity.class);
             startActivity(newactivity);
 
         } else {
