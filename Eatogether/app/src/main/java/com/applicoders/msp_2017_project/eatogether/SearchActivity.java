@@ -37,7 +37,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
     private static final int REQUEST_LOCATION = 1480;
-
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -73,17 +72,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                         ContextCompat.checkSelfPermission(SearchActivity.this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
         }
-//        if (shouldShowRequestPermissionRationale(ACCESS_FINE_LOCATION)) {
-//            TextView tv = null;
-//            Snackbar.make(tv, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-//                    .setAction(android.R.string.ok, new View.OnClickListener() {
-//                        @Override
-//                        @TargetApi(Build.VERSION_CODES.M)
-//                        public void onClick(View v) {
-//                            requestPermissions(new String[]{ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-//                        }
-//                    });
-//        }
         else {
             ActivityCompat.requestPermissions(SearchActivity.this, new String[]{ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
