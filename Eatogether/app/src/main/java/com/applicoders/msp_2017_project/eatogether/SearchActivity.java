@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,9 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        // show The Image in a ImageView
+        new DownloadImageTask((ImageView) findViewById(R.id.imgView))
+                .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
         initializeListeners();
         mayRequestLocation();
     }
