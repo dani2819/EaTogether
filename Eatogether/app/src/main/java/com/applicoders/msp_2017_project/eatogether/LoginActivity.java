@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import static android.Manifest.permission.READ_CONTACTS;
 
 import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -70,6 +71,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGIN;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
 
 /**
  * A login screen that offers login via email/password.
@@ -106,9 +109,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-
 //        facebookSDKInitialize();
         setContentView(R.layout.activity_login);
+
+        String temp_Token = SharedPrefHandler.getStoredPref(getApplicationContext(), TOKEN_PREF);
+        Toast.makeText(this, temp_Token, Toast.LENGTH_LONG).show();
+        if(!TextUtils.isEmpty(temp_Token)){
+            TOKEN = temp_Token;
+            Intent newActivity = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(newActivity);
+        }
         facebookSDKInitialize();
         //Google Sign-In
         findViewById(R.id.google_sign_in_button).setOnClickListener(this);
@@ -130,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+//        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -231,13 +241,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -249,6 +252,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             cancel = true;
         }
 
+//        // Check for a valid password, if the user entered one.
+//        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//            mPasswordView.setError(getString(R.string.error_invalid_password));
+//            focusView = mPasswordView;
+//            cancel = true;
+//        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -259,9 +269,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             // TODO: Add Token as well from sharedprefs in the Hashmap to send in POST call
             HashMap<String, String> keyValuePair = new HashMap<String, String>();
-            keyValuePair.put("username", email);
+            keyValuePair.put("email", email);
             keyValuePair.put("password", password);
-            mAuthTask = new UserLoginTask(keyValuePair, "POST", SERVER_RESOURCE_LOGIN);
+            mAuthTask = new LoginActivity.UserLoginTask(keyValuePair, "POST", SERVER_RESOURCE_LOGIN);
             mAuthTask.execute((Void) null);
         }
     }
@@ -374,7 +384,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+    protected class UserLoginTask extends AsyncTask<Void, Void, String> {
 
         private final HashMap KVP;
         private final String CallType;
@@ -399,6 +409,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onPostExecute(String result) {
+            Log.i("A", "Backend response: " + result);
             mAuthTask = null;
             showProgress(false);
 
@@ -408,9 +419,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     throw new Exception();
                 }
                 if (jsonObj.getBoolean("success")) {
-
+                    TOKEN = jsonObj.getString("message");
+                    SharedPrefHandler.StorePref(LoginActivity.this, TOKEN_PREF, TOKEN);
+                    Intent newactivity = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(newactivity);
                 } else {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.setError(jsonObj.getString("message"));
+                    Toast.makeText(LoginActivity.this, jsonObj.getString("message"), Toast.LENGTH_LONG).show();
                     mPasswordView.requestFocus();
                 }
             } catch (Exception e){

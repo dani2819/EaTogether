@@ -14,16 +14,15 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.MyPREFERENCE
  */
 
 public class SharedPrefHandler {
-    public static void StorePref(Context context, HashMap<String, String> prefsToStore){
-        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);;
+    public static void StorePref(Context context, String prefsKey, String prefValue){
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        for (Map.Entry<String, String> e : prefsToStore.entrySet()){
-            editor.putString(e.getKey(), e.getValue());
-        }
+        editor.putString(prefsKey, prefValue);
         editor.commit();
     }
 
     public static String getStoredPref(Context context, String prefName){
-        return "";
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        return sharedpreferences.getString(prefName, "");
     }
 }

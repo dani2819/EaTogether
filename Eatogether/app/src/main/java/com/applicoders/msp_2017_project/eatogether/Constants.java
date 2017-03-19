@@ -11,13 +11,15 @@ public class Constants {
 
     public static String TOKEN = "";
 
+    public static final String TOKEN_PREF = "TOKEN";
+
     public static final String SERVER_HOST = "http://eatogather.herokuapp.com/";
 
     public static final int SERVER_PORT = 0;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
 
-    public static final String SERVER_RESOURCE_LOGIN = "login";
+    public static final String SERVER_RESOURCE_LOGIN = "users/authenticate";
 
     public static final String SERVER_RESOURCE_LOGOUT = "logout";
 

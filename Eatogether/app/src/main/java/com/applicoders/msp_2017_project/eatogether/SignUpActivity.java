@@ -108,7 +108,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Reset errors.
         mfirstName.setError(null);
         mlastName.setError(null);
-        mUsername.setError(null);
+//        mUsername.setError(null);
         mEmailAddress.setError(null);
         mPassword.setError(null);
         mReEnterPass.setError(null);
@@ -117,7 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         String FirstName = mfirstName.getText().toString();
         String LastName = mlastName.getText().toString();
-        String Username = mUsername.getText().toString();
+//        String Username = mUsername.getText().toString();
         String email = mEmailAddress.getText().toString();
         String password = mPassword.getText().toString();
         String Telephone = mTelephone.getText().toString();
@@ -139,17 +139,17 @@ public class SignUpActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if(TextUtils.isEmpty(Username)){
-            mUsername.setError(getString(R.string.error_field_required));
-            focusView = mUsername;
-            cancel = true;
-        }
-
-        if(!isUsernameValid(Username)){
-            mUsername.setError(getString(R.string.error_invalid_username));
-            focusView = mUsername;
-            cancel = true;
-        }
+//        if(TextUtils.isEmpty(Username)){
+//            mUsername.setError(getString(R.string.error_field_required));
+//            focusView = mUsername;
+//            cancel = true;
+//        }
+//
+//        if(!isUsernameValid(Username)){
+//            mUsername.setError(getString(R.string.error_invalid_username));
+//            focusView = mUsername;
+//            cancel = true;
+//        }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -203,7 +203,7 @@ public class SignUpActivity extends AppCompatActivity {
             try {
                 keyValuePair.put("first_name", FirstName);
                 keyValuePair.put("last_name", LastName);
-                keyValuePair.put("username", Username);
+//                keyValuePair.put("username", Username);
                 keyValuePair.put("password", password);
                 keyValuePair.put("email", email);
                 keyValuePair.put("telephone", Telephone);
@@ -250,7 +250,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void initViews(){
         mfirstName = (EditText) findViewById(R.id.first_name);
         mlastName = (EditText) findViewById(R.id.last_name);
-        mUsername = (EditText) findViewById(R.id.username_signup);
+//        mUsername = (EditText) findViewById(R.id.username_signup);
         mEmailAddress = (EditText) findViewById(R.id.email_signup);
         mPassword = (EditText) findViewById(R.id.password_signup);
         mReEnterPass = (EditText) findViewById(R.id.repassword_signup);
