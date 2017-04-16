@@ -201,12 +201,12 @@ public class SignUpActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             try {
-                keyValuePair.put("first_name", FirstName);
-                keyValuePair.put("last_name", LastName);
+                keyValuePair.put("firstname", FirstName);
+                keyValuePair.put("lastname", LastName);
 //                keyValuePair.put("username", Username);
                 keyValuePair.put("password", password);
                 keyValuePair.put("email", email);
-                keyValuePair.put("telephone", Telephone);
+                keyValuePair.put("phone", Telephone);
                 keyValuePair.put("gender", mGender);
             }
             catch (Exception e){

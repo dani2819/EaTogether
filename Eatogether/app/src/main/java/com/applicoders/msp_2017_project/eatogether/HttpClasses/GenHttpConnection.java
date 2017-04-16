@@ -1,9 +1,9 @@
 package com.applicoders.msp_2017_project.eatogether.HttpClasses;
 
-import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,10 +16,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_HOST;
-import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_PORT;
-import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGIN;
-import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_SIGNUP;
 
 /**
  * Created by rafay on 3/12/2017.
@@ -27,8 +25,25 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOU
 
 public class GenHttpConnection {
 
-    public static String HttpCall(HashMap data, String CallType, String serverRes) throws IOException{
-        return TextUtils.equals(CallType, "POST")? PostCall(data, serverRes) : GetCall(data, serverRes);
+    static String boundary = "------WebKitFormBoundary";
+
+    public static String HttpCall(HashMap data, String CallType, String serverRes) throws IOException {
+        return TextUtils.equals(CallType, "POST") ? PostCall(data, serverRes) : GetCall(data, serverRes);
+    }
+
+    public static String HttpCall(File sourceFile, String serverRes, String token) throws IOException {
+        MultiPartUtils.prepareConnection(SERVER_HOST + serverRes, "UTF-8");
+        MultiPartUtils.addHeaderField("x-access-token", token);
+        MultiPartUtils.addHeaderField("Content-Type", "multipart/form-data; boundary=" + boundary);
+        MultiPartUtils.setup_writer();
+        MultiPartUtils.addFormField("token", token);
+        MultiPartUtils.addFormField("bio", "112111111");
+        MultiPartUtils.addFilePart("image", sourceFile);
+        HttpURLConnection conn = MultiPartUtils.finish();
+        Log.i("uploadFile", "HTTP Response is : " + conn.getResponseMessage() + ": " + conn.getResponseCode());
+        InputStream is = conn.getInputStream();
+        int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
+        return readStream(is, len);
     }
 
     private static String readStream(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
@@ -39,10 +54,10 @@ public class GenHttpConnection {
         return new String(buffer);
     }
 
-    private static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException{
+    private static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
+        for (Map.Entry<String, String> entry : params.entrySet()) {
             if (first)
                 first = false;
             else
@@ -68,7 +83,7 @@ public class GenHttpConnection {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setChunkedStreamingMode(0);
-            conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.connect();
 
             OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
@@ -94,28 +109,14 @@ public class GenHttpConnection {
     private static String GetCall(HashMap KVPair, String serverResource) throws IOException {
         InputStream is = null;
         String response = "";
-        URL url = new URL(SERVER_HOST + serverResource);
+        URL url = new URL(SERVER_HOST + serverResource + "?" + getPostDataString(KVPair));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            //conn.setDoOutput(true);
-            //conn.setChunkedStreamingMode(0);
-            conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             conn.connect();
-
-            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-            os.write(getPostDataString(KVPair));
-            os.flush();
-            os.close();
             Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
             is = conn.getInputStream();
             int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
-
             response = readStream(is, len);
-
         } finally {
             conn.disconnect();
             if (is != null) {

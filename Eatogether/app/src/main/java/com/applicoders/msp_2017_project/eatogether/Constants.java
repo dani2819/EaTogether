@@ -12,6 +12,14 @@ public class Constants {
     public static String TOKEN = "";
 
     public static final String TOKEN_PREF = "TOKEN";
+    public static final String PROFILE_IMAGE_LINK = "PROFILE_IMAGE";
+
+    public static final String User_First_Name_PREF = "FirstName";
+    public static final String User_Last_Name_PREF = "LastName";
+    public static final String User_Email_PREF = "Email";
+    public static final String User_Phone_PREF = "Phone";
+    public static final String User_Gender_PREF = "Gender";
+    public static final String User_Bio_PREF = "Bio";
 
     public static final String SERVER_HOST = "http://eatogather.herokuapp.com/";
 
@@ -24,4 +32,6 @@ public class Constants {
     public static final String SERVER_RESOURCE_LOGOUT = "logout";
 
     public static final String SERVER_RESOURCE_SIGNUP = "users/signup";
+
+    public static final String SERVER_RESOURCE_UPDATE = "users/update";
 }

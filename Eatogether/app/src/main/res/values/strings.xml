@@ -36,5 +36,6 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
     <string name="text_favorites">Favourites</string>
+    <string name="pick_image_intent_text">Choose Image</string>
 
 </resources>
