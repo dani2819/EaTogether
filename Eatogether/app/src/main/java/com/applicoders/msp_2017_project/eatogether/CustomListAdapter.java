@@ -12,17 +12,17 @@ public class CustomListAdapter extends ArrayAdapter<String> {
 
     private final Activity context;
     private final String[] itemname;
-    private final Integer[] imgid;
     private final String[] loc;
+    private final String[] desc;
 
-    public CustomListAdapter(Activity context, String[] itemname, Integer[] imgid, String[] loc) {
+    public CustomListAdapter(Activity context, String[] itemname, String[] loc, String[] desc) {
         super(context, R.layout.list_item, itemname);
         // TODO Auto-generated constructor stub
 
         this.context=context;
         this.itemname=itemname;
-        this.imgid=imgid;
         this.loc = loc;
+        this.desc = desc;
     }
 
     public View getView(int position,View view,ViewGroup parent) {
@@ -35,9 +35,9 @@ public class CustomListAdapter extends ArrayAdapter<String> {
         TextView description = (TextView) rowView.findViewById(R.id.textView2);
 
         txtTitle.setText(itemname[position]);
-        imageView.setImageResource(imgid[position]);
+        imageView.setImageResource(R.drawable.pic1);
         extratxt.setText(loc[position]);
-        description.setText("This is a very delicious dish made with salt and pepper. Lets try it.");
+        description.setText(desc[position]);
         return rowView;
 
     };

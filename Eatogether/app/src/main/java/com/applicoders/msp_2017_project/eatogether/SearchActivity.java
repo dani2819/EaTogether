@@ -3,6 +3,8 @@ package com.applicoders.msp_2017_project.eatogether;
 import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,10 +27,18 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.os.Build.VERSION_CODES.M;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_NEARBY;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 
@@ -42,63 +52,8 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
     private LatLng mCurrentLocation;
     private SearchActivity.NearbyNeighborsTask mAuthTask=null;
 
+
     ListView list;
-    String[] itemname ={
-            "Mexican Pasta",
-            "Pakistani Butter Karahi",
-            "Italaian Cheese Burger",
-            "Finnish Lora",
-            "Indian Chutyapa",
-            "Delicious Gobhi",
-            "Aaloo Palak",
-            "Khawaab Geena",
-            "Mexican Pasta",
-            "Pakistani Butter Karahi",
-            "Italaian Cheese Burger",
-            "Finnish Lora",
-            "Indian Chutyapa",
-            "Delicious Gobhi",
-            "Aaloo Palak",
-            "Khawaab Geena"
-    };
-    String[] loc ={
-            "Ruohalati 23, Helsinki",
-            "Otavantie 3, Helsinki",
-            "Servin Maijan Tie 12, Espoo",
-            "Luuvantie 1, Espoo",
-            "Ruohalati 23, Helsinki",
-            "Otavantie 3, Helsinki",
-            "Servin Maijan Tie 12, Espoo",
-            "Luuvantie 1, Espoo",
-            "Ruohalati 23, Helsinki",
-            "Otavantie 3, Helsinki",
-            "Servin Maijan Tie 12, Espoo",
-            "Luuvantie 1, Espoo",
-            "Ruohalati 23, Helsinki",
-            "Otavantie 3, Helsinki",
-            "Servin Maijan Tie 12, Espoo",
-            "Luuvantie 1, Espoo"
-    };
-
-
-    Integer[] imgid = {
-            R.drawable.pic1,
-            R.drawable.pic2,
-            R.drawable.pic3,
-            R.drawable.pic1,
-            R.drawable.pic2,
-            R.drawable.pic3,
-            R.drawable.pic2,
-            R.drawable.pic1,
-            R.drawable.pic1,
-            R.drawable.pic2,
-            R.drawable.pic3,
-            R.drawable.pic1,
-            R.drawable.pic2,
-            R.drawable.pic3,
-            R.drawable.pic2,
-            R.drawable.pic1
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,23 +62,22 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         // show The Image in a ImageView
         //new DownloadImageTask((ImageView) findViewById(R.id.imgView))
         //  .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
-        CustomListAdapter adapter=new CustomListAdapter(this, itemname, imgid, loc);
-        list=(ListView)findViewById(R.id.list);
-        list.setAdapter(adapter);
 
 
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        /*list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO Auto-generated method stub
-                String Slecteditem= itemname[+position];
+                String Slecteditem= arr[+position];
                 Toast.makeText(getApplicationContext(), Slecteditem, Toast.LENGTH_SHORT).show();
 
             }
-        });
+        });*/
+
         initializeListeners();
         mayRequestLocation();
     }
@@ -146,7 +100,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
 
 
     private void mayRequestLocation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+        if (Build.VERSION.SDK_INT < M ||
                 (ContextCompat.checkSelfPermission(SearchActivity.this, ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                         ContextCompat.checkSelfPermission(SearchActivity.this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
 
@@ -227,6 +181,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         LatLng = (LatLng.replace(","," ")).substring(10,LatLng.length()-1);
         HashMap<String, String> keyValuePair = new HashMap<String, String>();
         //Post this to server
+
         try {
             keyValuePair.put("token", TOKEN);
             keyValuePair.put("location", LatLng);
@@ -235,7 +190,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         catch (Exception e){
             Log.i("ERROR:", "key value pairs");
         }
-        mAuthTask = new SearchActivity.NearbyNeighborsTask(keyValuePair, "GET", SERVER_RESOURCE_NEARBY);
+        mAuthTask = new SearchActivity.NearbyNeighborsTask(keyValuePair, "GET", SERVER_RESOURCE_NEARBY, this);
         mAuthTask.execute();
         Toast.makeText(this, mCurrentLocation.toString(), Toast.LENGTH_SHORT).show();
         //Log.d("DEBUG", "current location: " + mCurrentLocation.toString());
@@ -270,10 +225,12 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         private final HashMap KVP;
         private final String CallType;
         private final String ServerResource;
-        public NearbyNeighborsTask(HashMap<String, String> _KVP, String _Calltype, String _serverResource) {
+        private final Activity searchActivity;
+        public NearbyNeighborsTask(HashMap<String, String> _KVP, String _Calltype, String _serverResource, Activity _searchActivity) {
             KVP = _KVP;
             CallType = _Calltype;
             ServerResource = _serverResource;
+            searchActivity = _searchActivity;
         }
         @Override
         protected String doInBackground(Void... params) {
@@ -287,27 +244,81 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         @Override
         protected void onPostExecute(String result) {
             Log.i("A", "Backend response: " + result);
-            /* mAuthTask = null;
-            showProgress(false);
+            mAuthTask = null;
             try{
                 JSONObject jsonObj = new JSONObject(result);
                 if (jsonObj.has("error")) {
                     throw new Exception();
                 }
 
-                if(jsonObj.getBoolean("success")){
+                if(jsonObj.getBoolean("success"))
+                {
                     TOKEN = jsonObj.getString("message");
-                    Toast.makeText(getApplicationContext(), "Token: " + TOKEN, Toast.LENGTH_LONG).show();
-                    Log.e("Token: ", TOKEN.toString());
-                    mSignUpFormView.setVisibility(View.GONE);
-                    // TODO: Store token and Start New Activity.
+                    ArrayList itemnames = new ArrayList();
+                    ArrayList locs = new ArrayList();
+                    ArrayList descriptions = new ArrayList();
+                    ArrayList ids = new ArrayList();
+                    JSONArray jsonMainArr = jsonObj.getJSONArray("data");
+
+                    for (int i = 0; i < jsonMainArr.length(); ++i) {
+                        JSONObject rec = jsonMainArr.getJSONObject(i);
+                        itemnames.add(rec.getString("title"));
+                        String tempLocation = rec.getString("location");
+                        String[] splited = tempLocation.split("\\s+");
+                        String newLocation = getAddress(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
+                        locs.add(newLocation);
+                        descriptions.add(rec.getString("description"));
+                        ids.add(rec.getString("id"));
+                        Log.i("JSON PARSER:", rec.getString("id") );
+                    }
+
+                    String[] dishes_titles = (String[]) itemnames.toArray(new String[itemnames.size()]);
+                    String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
+                    String[] dishes_desc = (String[]) descriptions.toArray(new String[descriptions.size()]);
+                    String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
+                    populateListView(food_ids, dishes_titles, locationArray, dishes_desc);
+
+
                 }
-
-
             }
             catch (Exception e){
                 Log.e("Exception", e.toString());
-            }*/
+            }
+        }
+
+        protected void populateListView(final String[] food_ids, String[] dishes_titles, String[] location_array, String[] dishes_desc) throws IOException {
+            CustomListAdapter adapter=new CustomListAdapter(searchActivity, dishes_titles, location_array, dishes_desc);
+            list=(ListView)findViewById(R.id.list);
+            list.setAdapter(adapter);
+
+             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                // TODO Auto-generated method stub
+                String foodID= food_ids[+position];
+                Toast.makeText(getApplicationContext(), foodID, Toast.LENGTH_SHORT).show();
+
+                //Create new intent here and start activity by passing variable "foodID" (Id is in string, you can convert it into integer)
+                
+
+            }
+        });
+
+
+        }
+
+        public String getAddress(double lat, double lng) throws IOException {
+            Geocoder geocoder = new Geocoder(searchActivity, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            String cityName = addresses.get(0).getAddressLine(0);
+            String stateName = addresses.get(0).getAddressLine(1);
+            String countryName = addresses.get(0).getAddressLine(2);
+
+            Log.i("Location Name:", cityName+" "+stateName+" "+countryName);
+
+            return cityName+" "+stateName+" "+countryName;
         }
 
         @Override
@@ -316,5 +327,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
             //showProgress(false);
         }
     }
+
 }
+
 

@@ -63,17 +63,19 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".SearchActivity" />
-
-        <activity android:name=".ProfileActivity">
-        </activity>
-        <activity android:name=".EditProfileActivity">
+        <activity android:name=".HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".SearchActivity" />
+
+        <activity android:name=".ProfileActivity">
+        </activity>
+        <activity android:name=".EditProfileActivity">
+
         </activity>
 
         <activity android:name=".HostActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for

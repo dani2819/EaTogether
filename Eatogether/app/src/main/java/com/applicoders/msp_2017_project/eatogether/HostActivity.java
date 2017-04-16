@@ -103,6 +103,8 @@ public class HostActivity extends AppCompatActivity implements PlaceSelectionLis
             keyValuePair.put("description", des);
             keyValuePair.put("datetime", fechaStr);
             keyValuePair.put("location", LatLng);
+
+            Log.i("STRING:",TOKEN+" "+dinner_title+" "+number_of_guests+" "+des+" "+fechaStr+" "+LatLng);
         }
         catch (Exception e){
 
