@@ -1,15 +1,23 @@
 package com.applicoders.msp_2017_project.eatogether;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +37,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_UPDATE;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
@@ -38,7 +49,8 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.User_Gender_
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private UpdateUserDataTask mAuthTask = null;
+    private UpdateUserDataTask updataImageTask = null;
+    private UpdateUserDataTask updateTextTasl = null;
 
     private static final int PICK_IMAGE_ID = 234; // the number doesn't matter
     EditText descriptionText, newPass, retypePass;
@@ -48,12 +60,19 @@ public class EditProfileActivity extends AppCompatActivity {
     Button changePassBtn;
     View changePassboxesLayout;
     Context context;
-
+    boolean wasBioChanged = false;
+    boolean wasPasswordChanged = false;
+    boolean allUpdated = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
         context = this;
+
+        mProfileView= findViewById(R.id.edit_profile_layoutToHide);
+        mProgressView = findViewById(R.id.edit_profile_progress);
+
         profileImage = (ImageView) findViewById(R.id.edit_profile_image);
         editImage = (ImageView) findViewById(R.id.edit_profile_thumb);
         descriptionText = (EditText) findViewById(R.id.edit_profile_description);
@@ -99,28 +118,111 @@ public class EditProfileActivity extends AppCompatActivity {
                 changeImage();
             }
         });
+
+        descriptionText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d("descroTextchanged", "True");
+                wasBioChanged = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        newPass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.d("descroTextchanged", "True");
+                wasPasswordChanged = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
 
     private void SaveChanges() throws IOException {
 
-        currentBitmap = scaleDown(currentBitmap, 120, true);
+        HashMap<String, String> keyValuePair = new HashMap<String, String>();
+        try {
 
-        if(mAuthTask != null)
-            return;
-        File imageFile = null;
-        if(currentBitmap != null){
-            Log.d("Bitmap Status", "Not Null");
-            imageFile = ImageToFile.convertImage(this, currentBitmap);
+            if(wasPasswordChanged){
+                if(!isPasswordValid(newPass.getText().toString())){
+                    newPass.setError(getString(R.string.error_invalid_password));
+                    newPass.requestFocus();
+                    return;
+                }
+                if(!TextUtils.equals(retypePass.getText().toString(), newPass.getText().toString())){
+                    retypePass.setError(getString(R.string.error_password_unmatch));
+                    retypePass.requestFocus();
+                    return;
+                }
+            }
+
+            if (updataImageTask != null || updateTextTasl != null)
+                return;
+            File imageFile = null;
+            if (currentBitmap != null) {
+                Log.d("Bitmap Status", "Not Null");
+                currentBitmap = scaleDown(currentBitmap, 120, true);
+                imageFile = ImageToFile.convertImage(this, currentBitmap);
+                if (imageFile != null) {
+                    Log.d("File Status", "Not Null");
+                    updataImageTask = new UpdateUserDataTask(this, imageFile, null,"POST", SERVER_RESOURCE_UPDATE, TOKEN);
+                    updataImageTask.execute((Void) null);
+                }
+            }
+
+            if (wasBioChanged){
+                Log.d("Update Bio", descriptionText.getText().toString());
+                keyValuePair.put("token", TOKEN);
+                keyValuePair.put("bio", descriptionText.getText().toString());
+                updateTextTasl = new UpdateUserDataTask(this, null, keyValuePair, "POST", SERVER_RESOURCE_UPDATE, TOKEN);
+                updateTextTasl.execute((Void) null);
+            } else if (wasPasswordChanged){
+                keyValuePair.put("token", TOKEN);
+                keyValuePair.put("password", newPass.getText().toString());
+                updateTextTasl = new UpdateUserDataTask(this, null, keyValuePair, "POST", SERVER_RESOURCE_UPDATE, TOKEN);
+                updateTextTasl.execute((Void) null);
+            } else if (wasBioChanged && wasPasswordChanged){
+                keyValuePair.put("token", TOKEN);
+                keyValuePair.put("bio", descriptionText.getText().toString());
+                keyValuePair.put("password", newPass.getText().toString());
+                updateTextTasl = new UpdateUserDataTask(this, null, keyValuePair, "POST", SERVER_RESOURCE_UPDATE, TOKEN);
+                updateTextTasl.execute((Void) null);
+            }
+        } catch (Exception e){
+            Log.d("Save Change: ", e.getMessage());
+        } finally {
+            allUpdated = true;
         }
-        if(imageFile != null) {
-            Log.d("File Status", "Not Null");
-            TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
-            mAuthTask = new UpdateUserDataTask(this, imageFile, "POST", SERVER_RESOURCE_UPDATE, TOKEN);
-            mAuthTask.execute((Void) null);
-        }
 
 
+    }
+
+    private boolean isPasswordValid(String password) {
+        Pattern pattern;
+        Matcher matcher;
+        String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{6,}$";
+        pattern = Pattern.compile(PASSWORD_PATTERN);
+        matcher = pattern.matcher(password);
+        return matcher.matches();
     }
 
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
@@ -175,15 +277,52 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public void dataUpdatedSuccessfully() {
         // TODO: data saved succesfull go back to activity.
-        mAuthTask.instance = null;
+        updataImageTask.instance = null;
+        currentBitmap = null;
+        if (allUpdated) {
+            allUpdated = false;
+            //updataImageTask.instance = null;
+            updateTextTasl.instance = null;
+            Toast.makeText(this, "Data was saved succesfully", Toast.LENGTH_LONG).show();
+            Intent newActivity = new Intent(context, ProfileActivity.class);
+            newActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(newActivity);
+        }
+    }
 
-        Toast.makeText(this, "Data was saved succesfully", Toast.LENGTH_LONG).show();
+    View mProfileView;
+    View mProgressView;
 
-        Intent newActivity = new Intent(context, ProfileActivity.class);
-        newActivity.putExtra("Description", descriptionText.getText().toString());
-        String filename = createBitmapByte(currentBitmap);
-        newActivity.putExtra("image", filename);
-        newActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(newActivity);
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mProfileView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 }

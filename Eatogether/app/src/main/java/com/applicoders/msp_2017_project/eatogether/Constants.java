@@ -40,4 +40,6 @@ public class Constants {
 
     public static final String SERVER_RESOURCE_NEARBY = "hosts";
 
+    public static final String SERVER_RESOURCE_FOOD_EVENT = "hosts/one";
+
 }

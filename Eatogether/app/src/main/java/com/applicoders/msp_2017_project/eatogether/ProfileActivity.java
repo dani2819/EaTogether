@@ -71,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         getUserData();
+        new DownloadImageTask(profileImage).execute("https://media.nngroup.com/media/people/photos/IMG_2366-copy-400x400.jpg.400x400_q95_autocrop_crop_upscale.jpg");
 //        Bitmap bmp = null;
 //        String filename = getIntent().getStringExtra("image");
 //        String description = getIntent().getStringExtra("Description");
