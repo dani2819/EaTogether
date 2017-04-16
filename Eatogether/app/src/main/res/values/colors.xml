@@ -13,4 +13,9 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
     <color name="Blue">#ff0000ff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="green_temp">#FFBF00</color>
+    <color name="green_dark">#FFD12A</color>
+    <color name="bright_green">#ED9121</color>
+    <color name="button_green">#FFA700</color>
 </resources>
