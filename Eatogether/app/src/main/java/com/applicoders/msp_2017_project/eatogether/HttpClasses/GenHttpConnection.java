@@ -66,6 +66,7 @@ public class GenHttpConnection {
             result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
             result.append("=");
             result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+
         }
 
         return result.toString();
@@ -109,7 +110,7 @@ public class GenHttpConnection {
     private static String GetCall(HashMap KVPair, String serverResource) throws IOException {
         InputStream is = null;
         String response = "";
-        URL url = new URL(SERVER_HOST + serverResource + "?" + getPostDataString(KVPair));
+        URL url = new URL(SERVER_HOST + serverResource+"?"+(getPostDataString(KVPair)));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         try {
             conn.connect();

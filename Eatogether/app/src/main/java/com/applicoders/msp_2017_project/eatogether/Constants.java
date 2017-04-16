@@ -9,7 +9,7 @@ public class Constants {
 
     }
 
-    public static String TOKEN = "";
+    public static String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIyMjA0MzgsImV4cCI6MTUwMDg2MDQzOH0.fFhy7ukKS2Oq03o-t7YF6jT2mkSQY51JecEfwAI_APo";
 
     public static final String TOKEN_PREF = "TOKEN";
     public static final String PROFILE_IMAGE_LINK = "PROFILE_IMAGE";
@@ -33,5 +33,11 @@ public class Constants {
 
     public static final String SERVER_RESOURCE_SIGNUP = "users/signup";
 
+
     public static final String SERVER_RESOURCE_UPDATE = "users/update";
+
+    public static final String SERVER_RESOURCE_HOST = "hosts/create";
+
+    public static final String SERVER_RESOURCE_NEARBY = "hosts";
+
 }

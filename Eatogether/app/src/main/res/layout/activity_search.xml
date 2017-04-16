@@ -1,82 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/singleItem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:orientation="vertical"
-    tools:context="com.applicoders.msp_2017_project.eatogether.SearchActivity">
-    <LinearLayout
+    android:orientation="vertical">
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:background="@drawable/button">
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:scaleType="centerCrop"
-            android:id="@+id/imgView"/>
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_alignRight="@+id/imgView">
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_friends"
-                />
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_restaurants"/>
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_nearby"/>
+        android:layout_height="wrap_content"
+        android:text="Nearby Food Activity"
+        android:padding="15dp"
+        android:textColor="#FFFF"
+        android:textSize="20sp"
+        android:id="@+id/textView"
+        android:background="#00796b"/>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ListView>
 
-            android:layout_marginLeft="10dp"
-            android:layout_alignRight="@+id/imgView">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="Dani28"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chicken Karahi"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="Helsinki"
-                android:id="@+id/textView" />
-
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-            <Button
-                android:id="@+id/accept"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:text="Accept"/>
-        </RelativeLayout>
-    </LinearLayout>
 </LinearLayout>

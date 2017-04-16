@@ -1,40 +1,38 @@
 package com.applicoders.msp_2017_project.eatogether;
 
-import android.*;
-import android.Manifest;
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.vision.text.Text;
+
+import java.util.HashMap;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.R.attr.version;
+import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_NEARBY;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 
-public class SearchActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class SearchActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
     private static final int REQUEST_LOCATION = 1480;
@@ -42,13 +40,90 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private LatLng mCurrentLocation;
+    private SearchActivity.NearbyNeighborsTask mAuthTask=null;
+
+    ListView list;
+    String[] itemname ={
+            "Mexican Pasta",
+            "Pakistani Butter Karahi",
+            "Italaian Cheese Burger",
+            "Finnish Lora",
+            "Indian Chutyapa",
+            "Delicious Gobhi",
+            "Aaloo Palak",
+            "Khawaab Geena",
+            "Mexican Pasta",
+            "Pakistani Butter Karahi",
+            "Italaian Cheese Burger",
+            "Finnish Lora",
+            "Indian Chutyapa",
+            "Delicious Gobhi",
+            "Aaloo Palak",
+            "Khawaab Geena"
+    };
+    String[] loc ={
+            "Ruohalati 23, Helsinki",
+            "Otavantie 3, Helsinki",
+            "Servin Maijan Tie 12, Espoo",
+            "Luuvantie 1, Espoo",
+            "Ruohalati 23, Helsinki",
+            "Otavantie 3, Helsinki",
+            "Servin Maijan Tie 12, Espoo",
+            "Luuvantie 1, Espoo",
+            "Ruohalati 23, Helsinki",
+            "Otavantie 3, Helsinki",
+            "Servin Maijan Tie 12, Espoo",
+            "Luuvantie 1, Espoo",
+            "Ruohalati 23, Helsinki",
+            "Otavantie 3, Helsinki",
+            "Servin Maijan Tie 12, Espoo",
+            "Luuvantie 1, Espoo"
+    };
+
+
+    Integer[] imgid = {
+            R.drawable.pic1,
+            R.drawable.pic2,
+            R.drawable.pic3,
+            R.drawable.pic1,
+            R.drawable.pic2,
+            R.drawable.pic3,
+            R.drawable.pic2,
+            R.drawable.pic1,
+            R.drawable.pic1,
+            R.drawable.pic2,
+            R.drawable.pic3,
+            R.drawable.pic1,
+            R.drawable.pic2,
+            R.drawable.pic3,
+            R.drawable.pic2,
+            R.drawable.pic1
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         // show The Image in a ImageView
-        new DownloadImageTask((ImageView) findViewById(R.id.imgView))
-                .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
+        //new DownloadImageTask((ImageView) findViewById(R.id.imgView))
+        //  .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
+        CustomListAdapter adapter=new CustomListAdapter(this, itemname, imgid, loc);
+        list=(ListView)findViewById(R.id.list);
+        list.setAdapter(adapter);
+
+
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                // TODO Auto-generated method stub
+                String Slecteditem= itemname[+position];
+                Toast.makeText(getApplicationContext(), Slecteditem, Toast.LENGTH_SHORT).show();
+
+            }
+        });
         initializeListeners();
         mayRequestLocation();
     }
@@ -146,9 +221,24 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     private void handleNewLocation(Location location) {
         double currentLat = location.getLatitude();
         double currentLong = location.getLongitude();
+        String LatLng;
         mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng = mCurrentLocation.toString();
+        LatLng = (LatLng.replace(","," ")).substring(10,LatLng.length()-1);
+        HashMap<String, String> keyValuePair = new HashMap<String, String>();
+        //Post this to server
+        try {
+            keyValuePair.put("token", TOKEN);
+            keyValuePair.put("location", LatLng);
+            Log.i("CHECK;", keyValuePair.toString());
+        }
+        catch (Exception e){
+            Log.i("ERROR:", "key value pairs");
+        }
+        mAuthTask = new SearchActivity.NearbyNeighborsTask(keyValuePair, "GET", SERVER_RESOURCE_NEARBY);
+        mAuthTask.execute();
         Toast.makeText(this, mCurrentLocation.toString(), Toast.LENGTH_SHORT).show();
-        Log.d("DEBUG", "current location: " + mCurrentLocation.toString());
+        //Log.d("DEBUG", "current location: " + mCurrentLocation.toString());
     }
 
     @Override
@@ -174,6 +264,57 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
+    }
+
+    public class NearbyNeighborsTask extends AsyncTask<Void, Void, String> {
+        private final HashMap KVP;
+        private final String CallType;
+        private final String ServerResource;
+        public NearbyNeighborsTask(HashMap<String, String> _KVP, String _Calltype, String _serverResource) {
+            KVP = _KVP;
+            CallType = _Calltype;
+            ServerResource = _serverResource;
+        }
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                return GenHttpConnection.HttpCall(KVP, CallType, ServerResource);
+            } catch (Exception e) {
+                return "{\"error\":true}";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.i("A", "Backend response: " + result);
+            /* mAuthTask = null;
+            showProgress(false);
+            try{
+                JSONObject jsonObj = new JSONObject(result);
+                if (jsonObj.has("error")) {
+                    throw new Exception();
+                }
+
+                if(jsonObj.getBoolean("success")){
+                    TOKEN = jsonObj.getString("message");
+                    Toast.makeText(getApplicationContext(), "Token: " + TOKEN, Toast.LENGTH_LONG).show();
+                    Log.e("Token: ", TOKEN.toString());
+                    mSignUpFormView.setVisibility(View.GONE);
+                    // TODO: Store token and Start New Activity.
+                }
+
+
+            }
+            catch (Exception e){
+                Log.e("Exception", e.toString());
+            }*/
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+            //showProgress(false);
+        }
     }
 }
 
