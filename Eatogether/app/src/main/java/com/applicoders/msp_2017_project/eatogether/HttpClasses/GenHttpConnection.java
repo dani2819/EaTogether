@@ -3,6 +3,7 @@ package com.applicoders.msp_2017_project.eatogether.HttpClasses;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
 
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_HOST;
 
@@ -92,10 +92,18 @@ public class GenHttpConnection {
             os.flush();
             os.close();
             Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
-            is = conn.getInputStream();
-            int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
+            //is = conn.getInputStream();
+            //int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
 
-            response = readStream(is, len);
+            //response = readStream(is, len);
+            int nextCharacter; // read() returns an int, we cast it to char later
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            while(true){ // Infinite loop, can only be stopped by a "break" statement
+                nextCharacter = reader.read(); // read() without parameters returns one character
+                if(nextCharacter == -1) // A return value of -1 means that we reached the end
+                    break;
+                response += (char) nextCharacter; // The += operator appends the character to the end of the string
+            }
 
         } finally {
             conn.disconnect();
