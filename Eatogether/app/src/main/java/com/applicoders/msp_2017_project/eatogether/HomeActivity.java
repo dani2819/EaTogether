@@ -15,6 +15,7 @@ public class HomeActivity extends AppCompatActivity {
         //find text view numbers
         Button searchButton = (Button) findViewById(R.id.searchNearby);
         Button hostButton = (Button) findViewById(R.id.host);
+        Button stats = (Button) findViewById(R.id.stats);
         //set onclick listener
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,6 +30,14 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent j = new Intent(HomeActivity.this, HostActivity.class);
                 startActivity(j);
+            }
+        });
+
+        stats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent k = new Intent(HomeActivity.this, StatsActivity.class);
+                startActivity(k);
             }
         });
     }

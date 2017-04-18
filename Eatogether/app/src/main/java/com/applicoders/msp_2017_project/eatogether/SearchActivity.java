@@ -1,5 +1,8 @@
 package com.applicoders.msp_2017_project.eatogether;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -51,14 +54,15 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
     private LocationRequest mLocationRequest;
     private LatLng mCurrentLocation;
     private SearchActivity.NearbyNeighborsTask mAuthTask=null;
-
-
+    private View mProgressView;
     ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        list = (ListView)findViewById(R.id.list);
+        mProgressView = findViewById(R.id.signup_progress);
         // show The Image in a ImageView
         //new DownloadImageTask((ImageView) findViewById(R.id.imgView))
         //  .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
@@ -173,6 +177,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
     }
 
     private void handleNewLocation(Location location) {
+        showProgress(true);
         double currentLat = location.getLatitude();
         double currentLong = location.getLongitude();
         String LatLng;
@@ -241,8 +246,15 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
             }
         }
 
+        /*
+        @Override
+        protected  void onPreExecute(){
+            showProgress(true);
+        }*/
+
         @Override
         protected void onPostExecute(String result) {
+            showProgress(false);
             Log.i("A", "Backend response: " + result);
             mAuthTask = null;
             try{
@@ -256,8 +268,10 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
                     TOKEN = jsonObj.getString("message");
                     ArrayList itemnames = new ArrayList();
                     ArrayList locs = new ArrayList();
-                    ArrayList descriptions = new ArrayList();
+                    ArrayList guests = new ArrayList();
                     ArrayList ids = new ArrayList();
+                    ArrayList dates = new ArrayList();
+                    ArrayList times = new ArrayList();
                     JSONArray jsonMainArr = jsonObj.getJSONArray("data");
 
                     for (int i = 0; i < jsonMainArr.length(); ++i) {
@@ -266,17 +280,21 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
                         String tempLocation = rec.getString("location");
                         String[] splited = tempLocation.split("\\s+");
                         String newLocation = getAddress(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
+                        String datetime = rec.getString("datetime");
+                        String date_only = datetime.substring(0,10);
+                        dates.add(date_only);
                         locs.add(newLocation);
-                        descriptions.add(rec.getString("description"));
+                        guests.add(rec.getString("noofguest"));
                         ids.add(rec.getString("id"));
                         Log.i("JSON PARSER:", rec.getString("id") );
                     }
 
                     String[] dishes_titles = (String[]) itemnames.toArray(new String[itemnames.size()]);
                     String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
-                    String[] dishes_desc = (String[]) descriptions.toArray(new String[descriptions.size()]);
+                    String[] guest = (String[]) guests.toArray(new String[guests.size()]);
                     String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
-                    populateListView(food_ids, dishes_titles, locationArray, dishes_desc);
+                    String[] dateArray = (String[]) dates.toArray(new String[dates.size()]);
+                    populateListView(food_ids, dishes_titles, locationArray, guest, dateArray);
 
 
                 }
@@ -286,13 +304,13 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
             }
         }
 
-        protected void populateListView(final String[] food_ids, String[] dishes_titles, String[] location_array, String[] dishes_desc) throws IOException {
-            CustomListAdapter adapter=new CustomListAdapter(searchActivity, dishes_titles, location_array, dishes_desc);
-            list=(ListView)findViewById(R.id.list);
+        protected void populateListView(final String[] food_ids, String[] dishes_titles, String[] location_array, String[] guests, String[] dates) throws IOException {
+
+            CustomListAdapter adapter=new CustomListAdapter(searchActivity, dishes_titles, location_array, guests, dates);
+
             list.setAdapter(adapter);
 
-             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -301,7 +319,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
                 Toast.makeText(getApplicationContext(), foodID, Toast.LENGTH_SHORT).show();
 
                 //Create new intent here and start activity by passing variable "foodID" (Id is in string, you can convert it into integer)
-                
+
 
             }
         });
@@ -310,6 +328,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         }
 
         public String getAddress(double lat, double lng) throws IOException {
+
             Geocoder geocoder = new Geocoder(searchActivity, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             String cityName = addresses.get(0).getAddressLine(0);
@@ -325,6 +344,41 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         protected void onCancelled() {
             mAuthTask = null;
             //showProgress(false);
+        }
+    }
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            list.setVisibility(show ? View.GONE : View.VISIBLE);
+            list.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    list.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            list.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

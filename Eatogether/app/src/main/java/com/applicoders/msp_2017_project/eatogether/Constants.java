@@ -42,4 +42,7 @@ public class Constants {
 
     public static final String SERVER_RESOURCE_FOOD_EVENT = "hosts/one";
 
+    public static final String SERVER_RESOURCE_STATS = "users/stats";
+
+
 }

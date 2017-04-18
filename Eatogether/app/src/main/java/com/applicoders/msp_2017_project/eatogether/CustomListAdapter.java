@@ -13,16 +13,19 @@ public class CustomListAdapter extends ArrayAdapter<String> {
     private final Activity context;
     private final String[] itemname;
     private final String[] loc;
-    private final String[] desc;
+    private final String[] guest;
+    private final String[] date;
 
-    public CustomListAdapter(Activity context, String[] itemname, String[] loc, String[] desc) {
+
+    public CustomListAdapter(Activity context, String[] itemname, String[] loc, String[] guest, String[] date) {
         super(context, R.layout.list_item, itemname);
         // TODO Auto-generated constructor stub
 
         this.context=context;
         this.itemname=itemname;
         this.loc = loc;
-        this.desc = desc;
+        this.guest = guest;
+        this.date = date;
     }
 
     public View getView(int position,View view,ViewGroup parent) {
@@ -31,13 +34,16 @@ public class CustomListAdapter extends ArrayAdapter<String> {
 
         TextView txtTitle = (TextView) rowView.findViewById(R.id.item);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        TextView extratxt = (TextView) rowView.findViewById(R.id.textView1);
-        TextView description = (TextView) rowView.findViewById(R.id.textView2);
-
+        TextView locText = (TextView) rowView.findViewById(R.id.textView1);
+        TextView numOfGuestText = (TextView) rowView.findViewById(R.id.noofguest);
+        TextView dateText = (TextView) rowView.findViewById(R.id.date);
+        TextView timeText = (TextView) rowView.findViewById(R.id.time);
         txtTitle.setText(itemname[position]);
         imageView.setImageResource(R.drawable.pic1);
-        extratxt.setText(loc[position]);
-        description.setText(desc[position]);
+        locText.setText(loc[position]);
+        numOfGuestText.setText(guest[position]+" slots available");
+        dateText.setText(date[position]);
+        timeText.setText("10:20:00");
         return rowView;
 
     };

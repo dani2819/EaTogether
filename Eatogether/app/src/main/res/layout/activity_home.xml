@@ -28,5 +28,13 @@
             android:layout_marginTop="16dp"
             android:background="#00796b"
             />
+        <Button
+            android:id="@+id/stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upcoming Meals"
+            android:layout_marginTop="16dp"
+            android:background="#00796b"
+            />
     </LinearLayout>
 </RelativeLayout>
