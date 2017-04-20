@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
+
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
+
 public class HomeActivity extends AppCompatActivity {
 
     @Override

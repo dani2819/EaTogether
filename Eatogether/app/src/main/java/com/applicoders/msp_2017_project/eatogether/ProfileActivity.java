@@ -5,27 +5,24 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.applicoders.msp_2017_project.eatogether.AsyncTasks.GetOneUserTask;
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.GetUserDataTask;
+import com.applicoders.msp_2017_project.eatogether.Interfaces.TaskDone;
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
 
-import java.io.FileInputStream;
 import java.util.HashMap;
 
+import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_GET_ONE_USER;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_UPDATE;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
@@ -36,9 +33,14 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.User_Gender_
 import static com.applicoders.msp_2017_project.eatogether.Constants.User_Last_Name_PREF;
 import static com.applicoders.msp_2017_project.eatogether.Constants.User_Phone_PREF;
 
-public class ProfileActivity extends AppCompatActivity {
+
+public class ProfileActivity extends AppCompatActivity implements TaskDone {
 
     private GetUserDataTask mAuthTask = null;
+    private GetOneUserTask getOneUserTask = null;
+
+    private Boolean isSelf = false;
+    private String userID = "";
 
     Context context;
     FloatingActionButton editProfileBtn;
@@ -49,6 +51,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         context = this;
+
+
 
         mProfileView= findViewById(R.id.profile_layout);
         mProgressView = findViewById(R.id.profile_progress);
@@ -66,12 +70,22 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent newactivity = new Intent(context, EditProfileActivity.class);
+                newactivity.putExtra("profileName", profileName.getText());
+                newactivity.putExtra("profileBio", profileDescription.getText());
+                newactivity.putExtra("profileGender", SharedPrefHandler.getStoredPref(getApplicationContext(), User_Gender_PREF));
                 startActivity(newactivity);
             }
         });
 
+
+        isSelf = getIntent().getBooleanExtra("isSelf", false);
+        getIntent().removeExtra("isSelf");
+        if(!isSelf) {
+            userID = getIntent().getStringExtra("UserID");
+            getIntent().removeExtra("UserID");
+        }
+
         getUserData();
-        new DownloadImageTask(profileImage).execute("https://media.nngroup.com/media/people/photos/IMG_2366-copy-400x400.jpg.400x400_q95_autocrop_crop_upscale.jpg");
 //        Bitmap bmp = null;
 //        String filename = getIntent().getStringExtra("image");
 //        String description = getIntent().getStringExtra("Description");
@@ -92,20 +106,48 @@ public class ProfileActivity extends AppCompatActivity {
 //        }
     }
 
+    private boolean wasPaused = false;
+    @Override
+    public void onPause(){
+        super.onPause();
+        wasPaused = true;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(wasPaused) {
+            wasPaused = false;
+            getUserData();
+        }
+    }
+
     private void getUserData(){
         if (mAuthTask.instance != null) {
+            return;
+        } else if (getOneUserTask != null){
             return;
         }
 
         HashMap<String, String> keyValuePair = new HashMap<String, String>();
-        SharedPrefHandler.StorePref(this, TOKEN_PREF, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIyMjA0MzgsImV4cCI6MTUwMDg2MDQzOH0.fFhy7ukKS2Oq03o-t7YF6jT2mkSQY51JecEfwAI_APo");
+        //SharedPrefHandler.StorePref(this, TOKEN_PREF, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXptYWt0ckBnbWFpbC5jb20iLCJpYXQiOjE0OTI1NDA5NzQsImV4cCI6MTUwMTE4MDk3NH0.8DMdaLSJIdpZ2hmBZJkgRM2lSlBF5t2fs9bLtMwblas");
+        Log.d("TOKEN PROFILE", TOKEN);
         keyValuePair.put("token", TOKEN);
-        mAuthTask = new GetUserDataTask(this, keyValuePair, "POST", SERVER_RESOURCE_UPDATE);
-        mAuthTask.execute((Void) null);
+        if(isSelf) {
+            mAuthTask = new GetUserDataTask(this, keyValuePair, "POST", SERVER_RESOURCE_UPDATE);
+            mAuthTask.execute((Void) null);
+        } else {
+            keyValuePair.put("id", userID);
+            getOneUserTask = new GetOneUserTask(this, keyValuePair, "GET", SERVER_RESOURCE_GET_ONE_USER);
+            getOneUserTask.execute((Void) null);
+        }
+
+        new DownloadImageTask(profileImage).execute("https://media.nngroup.com/media/people/photos/IMG_2366-copy-400x400.jpg.400x400_q95_autocrop_crop_upscale.jpg");
     }
 
     public void populateData() {
         mAuthTask = null;
+        getOneUserTask = null;
         String fullName = SharedPrefHandler.getStoredPref(this, User_First_Name_PREF) + " " + SharedPrefHandler.getStoredPref(this, User_Last_Name_PREF);
         profileName.setText(fullName);
         profileEmail.setText(SharedPrefHandler.getStoredPref(this, User_Email_PREF));
@@ -117,8 +159,18 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             genderImage.setImageResource(R.drawable.female_icon);
         }
+
+        if(!isSelf){
+            profileEmail.setVisibility(View.GONE);
+            profilePhone.setVisibility(View.GONE);
+            editProfileBtn.setVisibility(View.GONE);
+        } else {
+            profileEmail.setVisibility(View.VISIBLE);
+            profilePhone.setVisibility(View.VISIBLE);
+            editProfileBtn.setVisibility(View.VISIBLE);
+        }
+
         showProgress(false);
-        editProfileBtn.setVisibility(View.VISIBLE);
     }
 
     View mProfileView;
@@ -157,4 +209,13 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void TaskCompleted() {
+        populateData();
+    }
+
+    @Override
+    public void FoodEventTaskDone(String Data) {
+
+    }
 }

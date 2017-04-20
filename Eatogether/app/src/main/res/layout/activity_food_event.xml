@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ProgressBar
             style="?android:attr/progressBarStyleLarge"
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinatorlayout"
@@ -84,7 +84,6 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -94,7 +93,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aalu k parathay"
-                        android:textSize="35dp"
+                        android:textSize="27dp"
                         android:textStyle="bold"
                         android:layout_marginTop="20dp"
                         android:visibility="visible"
@@ -116,7 +115,8 @@
                         android:text="Rafay Khan"
                         android:textColor="@color/Blue"
                         android:layout_alignBottom="@+id/food_title"
-                        android:layout_toEndOf="@+id/hosttext">
+                        android:layout_toEndOf="@+id/hosttext"
+                        android:onClick="onClick">
                     </TextView>
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -130,7 +130,8 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_alignParentEnd="true"
                         android:layout_marginTop="30dp"
-                        android:layout_marginRight="10dp"/>
+                        android:layout_marginRight="10dp"
+                        android:onClick="onClick"/>
                 </RelativeLayout>
 
                 <View
@@ -218,13 +219,116 @@
                     android:id="@+id/food_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="10:49"
+                    android:text="12:00"
                     android:layout_marginTop="5dp"/>
-                <Button
-                    android:id="@+id/food_request_join"
+
+                <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Request To Join"/>
+                    android:id="@+id/food_btn_layout"
+                    android:layout_marginTop="15dp">
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Join"
+                        android:id="@+id/food_request_join"
+                        android:onClick="onClick"
+                        />
+                </FrameLayout>
+
+                <!--<Button-->
+                    <!--android:id="@+id/food_request_join"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Request To Join"-->
+                    <!--android:visibility="visible"/>-->
+
+
+                <!--<Button-->
+                    <!--android:id="@+id/food_request_unjoin"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="UnJoin"-->
+                    <!--android:visibility="gone"/>-->
+
+                <LinearLayout
+                    android:id="@+id/food_map_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="Map"
+                        android:textStyle="bold"
+                        android:textSize="15dp"/>
+
+                    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:map="http://schemas.android.com/apk/res-auto"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        android:id="@+id/map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
+                        map:mapType="normal"
+                        map:uiCompass="false"
+                        map:uiRotateGestures="true"
+                        map:uiScrollGestures="true"
+                        map:uiTiltGestures="true"
+                        map:uiZoomControls="true"
+                        map:uiZoomGestures="true"
+                        tools:context="com.applicoders.msp_2017_project.eatogether.FoodEventActivity" />
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Guest List"
+                    android:layout_marginTop="15dp"
+                    android:textStyle="bold"
+                    android:textSize="15dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/food_guestLayout_tohide"
+                    android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/food_guestList_holder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <include layout="@layout/guests_layout" />
+                        <include layout="@layout/guests_layout" />
+                        <include layout="@layout/guests_layout" />
+                        <include layout="@layout/guests_layout" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+                </LinearLayout>
 
             </LinearLayout>
 

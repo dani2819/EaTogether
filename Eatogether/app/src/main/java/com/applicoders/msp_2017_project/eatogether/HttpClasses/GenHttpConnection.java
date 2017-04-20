@@ -92,7 +92,7 @@ public class GenHttpConnection {
             os.flush();
             os.close();
             Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
-            //is = conn.getInputStream();
+            is = conn.getInputStream();
             //int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
 
             //response = readStream(is, len);
@@ -125,7 +125,18 @@ public class GenHttpConnection {
             Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
             is = conn.getInputStream();
             int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
-            response = readStream(is, len);
+//            response = readStream(is, len);
+
+            int nextCharacter; // read() returns an int, we cast it to char later
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            while(true){ // Infinite loop, can only be stopped by a "break" statement
+                nextCharacter = reader.read(); // read() without parameters returns one character
+                if(nextCharacter == -1) // A return value of -1 means that we reached the end
+                    break;
+                response += (char) nextCharacter; // The += operator appends the character to the end of the string
+            }
+
+
         } finally {
             conn.disconnect();
             if (is != null) {

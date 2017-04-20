@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -318,9 +319,9 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
                 String foodID= food_ids[+position];
                 Toast.makeText(getApplicationContext(), foodID, Toast.LENGTH_SHORT).show();
 
-                //Create new intent here and start activity by passing variable "foodID" (Id is in string, you can convert it into integer)
-
-
+                Intent newActivity = new Intent(getApplicationContext(), FoodEventActivity.class);
+                newActivity.putExtra("foodID", foodID);
+                startActivity(newActivity);
             }
         });
 

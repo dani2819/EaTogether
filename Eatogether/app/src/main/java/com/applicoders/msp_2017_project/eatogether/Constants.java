@@ -1,5 +1,7 @@
 package com.applicoders.msp_2017_project.eatogether;
 
+import android.content.Context;
+
 /**
  * Created by rafay on 3/8/2017.
  */
@@ -9,7 +11,9 @@ public class Constants {
 
     }
 
-    public static String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIyMjA0MzgsImV4cCI6MTUwMDg2MDQzOH0.fFhy7ukKS2Oq03o-t7YF6jT2mkSQY51JecEfwAI_APo";
+    public static Context CONTEXT;
+
+    public static String TOKEN = "";
 
     public static final String TOKEN_PREF = "TOKEN";
     public static final String PROFILE_IMAGE_LINK = "PROFILE_IMAGE";
@@ -43,6 +47,13 @@ public class Constants {
     public static final String SERVER_RESOURCE_FOOD_EVENT = "hosts/one";
 
     public static final String SERVER_RESOURCE_STATS = "users/stats";
+
+    public static final String SERVER_RESOURCE_JOIN = "hosts/join";
+
+    public static final String SERVER_RESOURCE_UNJOIN = "hosts/unjoin";
+
+    public static final String SERVER_RESOURCE_GET_ONE_USER = "users/one";
+
 
 
 }

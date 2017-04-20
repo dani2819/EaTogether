@@ -65,7 +65,6 @@ public class FoodEventDetailsTask extends AsyncTask<Void, Void, String> {
                 JSONObject data = jsonObj.getJSONObject("data");
                 String firstName = data.get("firstname").toString();
                 String lastName = data.get("lastname").toString();
-                String email = data.get("email").toString();
                 String description = data.get("description").toString();
                 String title = data.get("title").toString();
                 String location = data.get("location").toString();
@@ -73,15 +72,14 @@ public class FoodEventDetailsTask extends AsyncTask<Void, Void, String> {
                 String numOfGuests = data.get("noofguest").toString();
                 String hostID = data.get("userid").toString();
                 String joinedGuests = data.get("joining").toString();
-                String isHost = data.get("ishost").toString();
-                String canJoin = data.get("canjoin").toString();
-                // TODO Get data from Json array and populate guests list
-                //JSONArray guestsList = data.getJSONArray("guests");
+                Boolean isHost = data.getBoolean("ishost");
+                Boolean canJoin = data.getBoolean("canjoin");
+                Boolean hasJoined = data.getBoolean("hasjoined");
 
-                HashMap<String, String> dataToSend = new HashMap<String, String>();
+
+                HashMap<String, Object> dataToSend = new HashMap<String, Object>();
                 dataToSend.put("firstname", firstName);
                 dataToSend.put("lastname", lastName);
-                dataToSend.put("email", email);
                 dataToSend.put("desciption", description);
                 dataToSend.put("title", title);
                 dataToSend.put("location", location);
@@ -91,9 +89,29 @@ public class FoodEventDetailsTask extends AsyncTask<Void, Void, String> {
                 dataToSend.put("joinedGuests", joinedGuests);
                 dataToSend.put("isHost", isHost);
                 dataToSend.put("canJoin", canJoin);
+                dataToSend.put("hasjoined", hasJoined);
 
-                if(callingActivity != null)
+                HashMap<String, HashMap<String, String>> guestListToSend = new HashMap();
+                if(isHost) {
+                    // TODO Get data from Json array and populate guests list
+                    JSONArray guestsList = data.getJSONArray("guests");
+                    for (int i = 0; i < guestsList.length(); i++) {
+                        JSONObject record = guestsList.getJSONObject(i);
+                        HashMap<String, String> recordData = new HashMap();
+                        recordData.put("firstname", record.get("firstname").toString());
+                        recordData.put("lastname", record.get("lastname").toString());
+                        recordData.put("userID", record.get("uid").toString());
+                        recordData.put("joined", record.get("joined").toString());
+                        guestListToSend.put("Guest" + i, recordData);
+                    }
+                }
+
+                if(callingActivity != null) {
                     callingActivity.dataRecieved(dataToSend);
+                    if(isHost){
+                        callingActivity.populateGuestList(guestListToSend);
+                    }
+                }
             } else {
                 Toast.makeText(callingActivity, jsonObj.getString("message"), Toast.LENGTH_LONG).show();
             }

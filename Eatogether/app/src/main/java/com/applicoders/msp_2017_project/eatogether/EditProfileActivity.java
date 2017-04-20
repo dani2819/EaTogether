@@ -30,13 +30,10 @@ import com.applicoders.msp_2017_project.eatogether.AsyncTasks.UpdateUserDataTask
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.ImagePicker;
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.ImageToFile;
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
-import com.google.android.gms.nearby.messages.internal.Update;
-import com.google.android.gms.vision.text.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,8 +41,6 @@ import java.util.regex.Pattern;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_UPDATE;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
-import static com.applicoders.msp_2017_project.eatogether.Constants.User_Bio_PREF;
-import static com.applicoders.msp_2017_project.eatogether.Constants.User_Gender_PREF;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -53,6 +48,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private UpdateUserDataTask updateTextTasl = null;
 
     private static final int PICK_IMAGE_ID = 234; // the number doesn't matter
+    private TextView userName;
     EditText descriptionText, newPass, retypePass;
     FloatingActionButton saveButton;
     ImageView profileImage, editImage, genderImage;
@@ -73,13 +69,20 @@ public class EditProfileActivity extends AppCompatActivity {
         mProfileView= findViewById(R.id.edit_profile_layoutToHide);
         mProgressView = findViewById(R.id.edit_profile_progress);
 
+        String profName = getIntent().getStringExtra("profileName");
+        String profBio = getIntent().getStringExtra("profileBio");
+        String profGender = getIntent().getStringExtra("profileGender");
+
+
+        userName = (TextView) findViewById(R.id.edit_profile_name);
+        userName.setText(profName);
         profileImage = (ImageView) findViewById(R.id.edit_profile_image);
         editImage = (ImageView) findViewById(R.id.edit_profile_thumb);
         descriptionText = (EditText) findViewById(R.id.edit_profile_description);
-        descriptionText.setText(SharedPrefHandler.getStoredPref(this, User_Bio_PREF));
+        descriptionText.setText(profBio);
         genderImage = (ImageView) findViewById(R.id.edit_profile_genderImage);
         genderImage.setBackground(null);
-        if (SharedPrefHandler.getStoredPref(this, User_Gender_PREF).equals("1")) {
+        if (TextUtils.equals(profGender, "1")) {
             genderImage.setImageResource(R.drawable.male_icon);
         } else {
             genderImage.setImageResource(R.drawable.female_icon);
