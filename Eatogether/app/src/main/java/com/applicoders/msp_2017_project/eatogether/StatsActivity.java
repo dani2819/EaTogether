@@ -83,7 +83,6 @@ public class StatsActivity extends AppCompatActivity {
 
                 if(jsonObj.getBoolean("success"))
                 {
-                    TOKEN = jsonObj.getString("message");
                     ArrayList itemnames = new ArrayList();
                     ArrayList locs = new ArrayList();
                     ArrayList ids = new ArrayList();
@@ -95,6 +94,7 @@ public class StatsActivity extends AppCompatActivity {
                         JSONObject rec = jsonMainArr.getJSONObject(i);
                         itemnames.add(rec.getString("title"));
                         String tempLocation = rec.getString("location");
+
                         String[] splited = tempLocation.split("\\s+");
                         String newLocation = getAddress(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
                         String datetime = rec.getString("datetime");

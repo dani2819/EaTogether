@@ -25,7 +25,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"></activity>
+            android:label="@string/app_name" />
         <activity
             android:name=".SignUpActivity"
             android:label="@string/app_name">
@@ -60,8 +60,8 @@
 
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".ProfileActivity"></activity>
-        <activity android:name=".EditProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".EditProfileActivity" />
         <activity android:name=".HostActivity" />
 
         <!--
@@ -79,8 +79,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".StatsActivity"></activity>
+        <activity android:name=".StatsActivity" />
+        <activity android:name=".FirstFragment" />
+        <activity android:name=".StatsMainActivity"></activity>
     </application>
 
 </manifest>

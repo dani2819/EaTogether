@@ -20,7 +20,7 @@ public class StatsListAdapter extends ArrayAdapter<String> {
 
 
     public StatsListAdapter(Activity context, String[] itemname, String[] loc, String[] date) {
-        super(context, R.layout.list_item, itemname);
+        super(context, R.layout.list_item_stats, itemname);
         // TODO Auto-generated constructor stub
 
         this.context=context;

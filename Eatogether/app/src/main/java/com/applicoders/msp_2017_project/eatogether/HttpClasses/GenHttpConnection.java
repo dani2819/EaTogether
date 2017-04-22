@@ -124,8 +124,9 @@ public class GenHttpConnection {
             conn.connect();
             Log.i("v", "Login HTTP response code: " + conn.getResponseCode());
             is = conn.getInputStream();
-            int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
-//            response = readStream(is, len);
+
+            //int len = Integer.parseInt(conn.getHeaderField("Content-Length"));
+            //response = readStream(is, len);
 
             int nextCharacter; // read() returns an int, we cast it to char later
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -135,7 +136,6 @@ public class GenHttpConnection {
                     break;
                 response += (char) nextCharacter; // The += operator appends the character to the end of the string
             }
-
 
         } finally {
             conn.disconnect();
