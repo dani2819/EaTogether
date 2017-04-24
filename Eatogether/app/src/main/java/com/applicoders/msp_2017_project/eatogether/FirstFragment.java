@@ -168,34 +168,37 @@ public class FirstFragment extends Fragment {
             list.setAdapter(adapter);
         }
 
-        public void populatePreviousHost(JSONObject jsonObj) throws JSONException {
+        public void populatePreviousHost(JSONObject jsonObj) throws JSONException, IOException {
             ArrayList itemnames = new ArrayList();
-            //ArrayList locs = new ArrayList();
+            ArrayList locs = new ArrayList();
             ArrayList ids = new ArrayList();
             ArrayList dates = new ArrayList();
-            JSONObject jsonData = (jsonObj.getJSONObject("data")).getJSONObject("guest");
-            JSONArray jsonMainArr = jsonData.getJSONArray("upcoming");
+            JSONObject jsonData = (jsonObj.getJSONObject("data")).getJSONObject("host");
+            JSONArray jsonMainArr = jsonData.getJSONArray("old");
             Log.i("JSON OBJ DATA:",jsonData.toString());
             for (int i = 0; i < jsonMainArr.length(); ++i) {
                 JSONObject rec = jsonMainArr.getJSONObject(i);
                 itemnames.add(rec.getString("title"));
                 String tempLocation = rec.getString("location");
                 String[] splited = tempLocation.split("\\s+");
-                //String newLocation = getAddress(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
+                String newLocation = getAddress(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
                 String datetime = rec.getString("datetime");
                 String date_only = datetime.substring(0,10);
                 dates.add(date_only);
-                //locs.add(newLocation);
+                locs.add(newLocation);
                 ids.add(rec.getString("id"));
             }
 
             String[] dishes_titles = (String[]) itemnames.toArray(new String[itemnames.size()]);
-            //String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
+            String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
             String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
             String[] dateArray = (String[]) dates.toArray(new String[dates.size()]);
-
             //create view here
-            testLabel.setText("This is Upcoming Guest List");
+            FragListAdapter2 adapter= new FragListAdapter2((StatsMainActivity)getActivity(), dishes_titles, locationArray, dateArray);
+
+            list.setAdapter(adapter);
+
+
         }
         public String getAddress(double lat, double lng) throws IOException {
             Geocoder geocoder = new Geocoder((StatsMainActivity)getActivity(), Locale.getDefault());
