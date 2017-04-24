@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_HOST;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
 
 
 public class HostActivity extends AppCompatActivity implements PlaceSelectionListener {
@@ -98,7 +100,7 @@ public class HostActivity extends AppCompatActivity implements PlaceSelectionLis
         HashMap<String, String> keyValuePair = new HashMap<String, String>();
         //Post this to server
         try {
-            //TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
+            TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
 
             Log.d("Hosting data to send", TOKEN + "," + dinner_title + "," +  number_of_guests + "," +  des + "," + fechaStr + "," +  LatLng);
             keyValuePair.put("token", TOKEN);

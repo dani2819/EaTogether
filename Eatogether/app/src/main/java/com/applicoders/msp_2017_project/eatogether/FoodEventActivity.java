@@ -3,18 +3,16 @@ package com.applicoders.msp_2017_project.eatogether;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +28,6 @@ import com.applicoders.msp_2017_project.eatogether.AsyncTasks.GetOneUserTask;
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.JoinUserTask;
 import com.applicoders.msp_2017_project.eatogether.Interfaces.TaskDone;
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.internal.request.StringParcel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,7 +35,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.vision.text.Text;
 
 import java.io.IOException;
 import java.text.DateFormatSymbols;
@@ -52,7 +47,6 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOU
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_GET_ONE_USER;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_JOIN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_UNJOIN;
-import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_UPDATE;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
 import static com.applicoders.msp_2017_project.eatogether.Constants.User_Bio_PREF;
@@ -100,9 +94,9 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.CollapsingToolbarLayout1);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        SharedPrefHandler.StorePref(this, TOKEN_PREF, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM");//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXptYWt0ckBnbWFpbC5jb20iLCJpYXQiOjE0OTI1NDA5NzQsImV4cCI6MTUwMTE4MDk3NH0.8DMdaLSJIdpZ2hmBZJkgRM2lSlBF5t2fs9bLtMwblas");
-        TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM";
+        TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
+        //SharedPrefHandler.StorePref(this, TOKEN_PREF, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM");//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXptYWt0ckBnbWFpbC5jb20iLCJpYXQiOjE0OTI1NDA5NzQsImV4cCI6MTUwMTE4MDk3NH0.8DMdaLSJIdpZ2hmBZJkgRM2lSlBF5t2fs9bLtMwblas");
+        //TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM";
         //FoodID = getIntent().getStringExtra("foodID");
         FoodID = "16";
 
