@@ -198,7 +198,6 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         }
         mAuthTask = new SearchActivity.NearbyNeighborsTask(keyValuePair, "GET", SERVER_RESOURCE_NEARBY, this);
         mAuthTask.execute();
-        Toast.makeText(this, mCurrentLocation.toString(), Toast.LENGTH_SHORT).show();
         //Log.d("DEBUG", "current location: " + mCurrentLocation.toString());
     }
 

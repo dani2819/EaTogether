@@ -10,6 +10,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.applicoders.msp_2017_project.eatogether.StatsMainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hostings"
+        android:padding="15dp"
+        android:textColor="#FFFF"
+        android:textSize="20sp"
+        android:background="#00796b"/>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/vpPager"
         android:layout_width="match_parent"
