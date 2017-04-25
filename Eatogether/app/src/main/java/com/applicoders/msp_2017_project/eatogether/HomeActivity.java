@@ -1,10 +1,20 @@
 package com.applicoders.msp_2017_project.eatogether;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
+
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -12,10 +22,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
         //find text view numbers
-        Button searchButton = (Button) findViewById(R.id.searchNearby);
-        Button hostButton = (Button) findViewById(R.id.host);
-        Button stats = (Button) findViewById(R.id.stats);
+        FrameLayout searchButton = (FrameLayout) findViewById(R.id.home_search_nearby);
+        FrameLayout hostButton = (FrameLayout) findViewById(R.id.home_host);
+        FrameLayout profileButton = (FrameLayout) findViewById(R.id.home_profile);
         //set onclick listener
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,10 +44,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        stats.setOnClickListener(new View.OnClickListener() {
+        profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent k = new Intent(HomeActivity.this, StatsMainActivity.class);
+                Intent k = new Intent(HomeActivity.this, ProfileActivity.class);
+                k.putExtra("isSelf", true);
                 startActivity(k);
             }
         });

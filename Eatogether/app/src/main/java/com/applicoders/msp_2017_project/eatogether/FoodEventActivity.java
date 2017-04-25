@@ -3,6 +3,7 @@ package com.applicoders.msp_2017_project.eatogether;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -26,6 +27,8 @@ import android.widget.Toast;
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.FoodEventDetailsTask;
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.GetOneUserTask;
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.JoinUserTask;
+import com.applicoders.msp_2017_project.eatogether.AsyncTasks.RemoveGuestTask;
+import com.applicoders.msp_2017_project.eatogether.Interfaces.RemoveGuestTaskDone;
 import com.applicoders.msp_2017_project.eatogether.Interfaces.TaskDone;
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -94,11 +97,9 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.CollapsingToolbarLayout1);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
-        //SharedPrefHandler.StorePref(this, TOKEN_PREF, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM");//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYXptYWt0ckBnbWFpbC5jb20iLCJpYXQiOjE0OTI1NDA5NzQsImV4cCI6MTUwMTE4MDk3NH0.8DMdaLSJIdpZ2hmBZJkgRM2lSlBF5t2fs9bLtMwblas");
-        //TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmFmYUBnbWFpbC5jb20iLCJpYXQiOjE0OTIzNjIyMjEsImV4cCI6MTUwMTAwMjIyMX0.Hz4toqlz6kWQrQ0KPtR7LuD_Kbtm_esANksaT97HdpM";
-        //FoodID = getIntent().getStringExtra("foodID");
-        FoodID = "16";
+        FoodID = getIntent().getStringExtra("foodID");
 
         Title = (TextView) findViewById(R.id.food_title);
         Host = (TextView) findViewById(R.id.food_host);
@@ -132,7 +133,7 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void LoadData(){
-        showProgress(true);
+        showProgress(true, mProfileView, mProgressView);
         HashMap<String, String> keyValuePair = new HashMap<String, String>();
         keyValuePair.put("token", TOKEN);
         keyValuePair.put("id", FoodID);
@@ -167,7 +168,7 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
 //        dataToSend.put("isHost", isHost);
 //        dataToSend.put("canJoin", canJoin);
         mAuthTask= null;
-        showProgress(false);
+        showProgress(false, mProfileView, mProgressView);
         hostID = data.get("hostID").toString();
         isHost = (Boolean) data.get("isHost");
         canJoin = (Boolean) data.get("canJoin");
@@ -185,8 +186,10 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
             GuestLayouttoHide.setVisibility(View.VISIBLE);
 
         } else {
-            JoinReqLayout.setVisibility(View.VISIBLE);
-            MapHolder.setVisibility(View.VISIBLE);
+            if(canJoin) {
+                JoinReqLayout.setVisibility(View.VISIBLE);
+                MapHolder.setVisibility(View.VISIBLE);
+            }
             GuestLayouttoHide.setVisibility(View.GONE);
             mapFragment.getMapAsync(this);
         }
@@ -236,35 +239,35 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
     View mProgressView;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
+    private void showProgress(final boolean show, final View profView, final View progressView) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mProfileView.animate().setDuration(shortAnimTime).alpha(
+            profView.setVisibility(show ? View.GONE : View.VISIBLE);
+            profView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    profView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProfileView.setVisibility(show ? View.GONE : View.VISIBLE);
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            profView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -317,7 +320,7 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
                     joinUserTask = new JoinUserTask(this, keyValuePair, "POST", SERVER_RESOURCE_JOIN);
                 }
                 joinUserTask.execute((Void) null);
-                showProgress(true);
+                showProgress(true, mProfileView, mProgressView);
                 break;
 
             case R.id.food_host:
@@ -386,7 +389,7 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
         JoinTaskDone(Data);
     }
 
-    public static class MyDialogFragment extends DialogFragment implements TaskDone{
+    public static class MyDialogFragment extends DialogFragment implements TaskDone, RemoveGuestTaskDone{
 
         private GetOneUserTask getOneUserTask = null;
         private MyDialogFragment DF = null;
@@ -399,30 +402,40 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
             getDialog().setTitle("Guest Details");
             DF = this;
             ImageView dismiss = (ImageView) rootView.findViewById(R.id.dismiss);
+            PopupLayout = (View) rootView.findViewById(R.id.guest_popup_layout);
+            PopupProgress = (View) rootView.findViewById(R.id.guest_progress);
             dismiss.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dismiss();
                 }
             });
-
-            Button RemoveGuest = (Button) rootView.findViewById(R.id.guest_remove);
+            final Button RemoveGuest = (Button) rootView.findViewById(R.id.guest_remove);
             RemoveGuest.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((TextView) rootView.findViewById(R.id.guest_full_name)).setText("Azeem Akhter");
+//                    ((TextView) rootView.findViewById(R.id.guest_full_name)).setText("Azeem Akhter");
+                    HashMap<String, String> keyValuePair = new HashMap<String, String>();
+                    keyValuePair.put("token", TOKEN);
+                    keyValuePair.put("id", parentActivty.FoodID);
+                    keyValuePair.put("uid", parentActivty.GuestID);
+                    new RemoveGuestTask(DF, keyValuePair, "POST", SERVER_RESOURCE_UNJOIN).execute((Void) null);
+//                    mAuthTask.execute((Void) null);
                 }
             });
+
             GetGuestData();
             return rootView;
         }
 
 
 
+        private View PopupLayout, PopupProgress;
         private void GetGuestData(){
             if(getOneUserTask != null){
                 return;
             }
+            setShowsDialog(true);
             parentActivty = (FoodEventActivity) getActivity();
             HashMap<String, String> keyValuePair = new HashMap<String, String>();
             keyValuePair.put("token", TOKEN);
@@ -442,6 +455,7 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
         private void populateDialogData() {
+            showDialogueProgress(false);
             String fullName = new StringBuilder().append(SharedPrefHandler.getStoredPref(parentActivty, User_First_Name_PREF))
                     .append(" ").append(SharedPrefHandler.getStoredPref(parentActivty, User_Last_Name_PREF)).toString();
             ((TextView) rootView.findViewById(R.id.guest_full_name)).setText(fullName);
@@ -449,6 +463,50 @@ public class FoodEventActivity extends AppCompatActivity implements OnMapReadyCa
             ((TextView) rootView.findViewById(R.id.guest_bio)).setText(SharedPrefHandler.getStoredPref(parentActivty, User_Bio_PREF));
             ((TextView) rootView.findViewById(R.id.guest_phone)).setText(SharedPrefHandler.getStoredPref(parentActivty, User_Phone_PREF));
 
+        }
+
+        @Override
+        public void onDismiss(final DialogInterface dialog) {
+            //Fragment dialog had been dismissed
+            super.onDismiss(dialog);
+            parentActivty.LoadData();
+        }
+
+        @Override
+        public void onGuestRemoved() {
+            dismiss();
+        }
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+        private void showDialogueProgress(final boolean show) {
+            // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+            // for very easy animations. If available, use these APIs to fade-in
+            // the progress spinner.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+                PopupLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+                PopupLayout.animate().setDuration(shortAnimTime).alpha(
+                        show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        PopupLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+                    }
+                });
+
+                PopupProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+                PopupProgress.animate().setDuration(shortAnimTime).alpha(
+                        show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        PopupProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
+            } else {
+                // The ViewPropertyAnimator APIs are not available, so simply show
+                // and hide the relevant UI components.
+                PopupProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+                PopupLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
         }
     }
 }

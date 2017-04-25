@@ -3,6 +3,7 @@ package com.applicoders.msp_2017_project.eatogether;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,13 +87,13 @@ public class SignUpActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.rb_male:
                 if (checked) {
-                    Toast.makeText(this, "Male Button Clicked", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(this, "Male Button Clicked", Toast.LENGTH_LONG).show();
                     mGender = "1";
                     break;
                 }
             case R.id.rb_female:
                 if (checked) {
-                    Toast.makeText(this, "Female Button Clicked", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(this, "Female Button Clicked", Toast.LENGTH_LONG).show();
                     mGender = "0";
                     break;
                 }
@@ -122,7 +123,7 @@ public class SignUpActivity extends AppCompatActivity {
         String password = mPassword.getText().toString();
         String Telephone = mTelephone.getText().toString();
 
-        Toast.makeText(this, FirstName + ", " + LastName + ", " + email + ", " + password + ", " + Telephone, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, FirstName + ", " + LastName + ", " + email + ", " + password + ", " + Telephone + ", " + mGender, Toast.LENGTH_LONG).show();
 
         boolean cancel = false;
         View focusView = null;
@@ -187,7 +188,7 @@ public class SignUpActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        if(TextUtils.isEmpty(mGender)){
+        if(!TextUtils.equals(mGender, "1") && !TextUtils.equals(mGender, "0")){
             Toast.makeText(this, "Select Gender", Toast.LENGTH_LONG).show();
             cancel = true;
         }
@@ -201,8 +202,8 @@ public class SignUpActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             try {
-                keyValuePair.put("firstname", FirstName);
-                keyValuePair.put("lastname", LastName);
+                keyValuePair.put("first_name", FirstName);
+                keyValuePair.put("last_name", LastName);
 //                keyValuePair.put("username", Username);
                 keyValuePair.put("password", password);
                 keyValuePair.put("email", email);
@@ -258,6 +259,11 @@ public class SignUpActivity extends AppCompatActivity {
         mSignUpBtn = (Button) findViewById(R.id.btn_signup);
         mProgressView = findViewById(R.id.signup_progress);
         mSignUpFormView = findViewById(R.id.signup_form);
+        if(getIntent().getBooleanExtra("isGoogle",false)){
+            mfirstName.setText(getIntent().getStringExtra("firstname"));
+            mlastName.setText(getIntent().getStringExtra("lastname"));
+            mEmailAddress.setText(getIntent().getStringExtra("email"));
+        }
     }
 
     //Async Task for SignUp
@@ -294,10 +300,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if(jsonObj.getBoolean("success")){
                     TOKEN = jsonObj.getString("message");
-                    Toast.makeText(getApplicationContext(), "Token: " + TOKEN, Toast.LENGTH_LONG).show();
                     Log.e("Token: ", TOKEN.toString());
                     mSignUpFormView.setVisibility(View.GONE);
                     // TODO: Store token and Start New Activity.
+                    Intent newActivity = new Intent(getParent(), HomeActivity.class);
+                    newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(newActivity);
+                } else {
+                    Toast.makeText(getParent(), jsonObj.getString("message"), Toast.LENGTH_LONG).show();
                 }
 
 

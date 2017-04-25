@@ -10,9 +10,9 @@
     <string name="prompt_re_password">Re-Enter Password </string>
     <string name="prompt_telephone">Telephone Number </string>
     <string name="action_sign_up">Sign Up</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
     <string name="action_google_sign_in">Google Sign-In</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_short">Login in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is not Valid</string>
     <string name="error_incorrect_password">This password is incorrect</string>

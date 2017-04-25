@@ -11,33 +11,45 @@
         android:orientation="vertical"
         android:padding="16dp"
         >
-    <EditText
-        android:id="@+id/dinnerTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Dinner Title"
-        android:inputType="textPersonName" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/dinnerTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="Dinner Title"
+                android:inputType="textPersonName" />
+        </android.support.design.widget.TextInputLayout>
 
 
-    <EditText
-        android:id="@+id/numberOfGuests"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Number of Guests"
-        android:inputType="number"/>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/numberOfGuests"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="Number of Guests"
+                android:inputType="number"/>
+        </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:id="@+id/description"
-        android:layout_width="fill_parent"
-        android:layout_height="150dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:hint="Description"
-        android:inputType="textMultiLine"
-        android:padding="5dp" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="Description"
+                android:inputType="textMultiLine"
+                android:padding="5dp" />
+        </android.support.design.widget.TextInputLayout>
         <fragment
             android:id="@+id/place_autocomplete_fragment"
             android:layout_width="match_parent"

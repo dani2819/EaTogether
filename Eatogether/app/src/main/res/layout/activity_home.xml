@@ -1,40 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-    tools:context="com.applicoders.msp_2017_project.eatogether.HomeActivity">
-
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/home_host"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:padding="16dp"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/searchNearby"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        >
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Search for nearby neighbors"
-            android:background="#00796b"
-            />
-        <Button
-            android:id="@+id/host"
+            android:layout_height="match_parent"
+            android:background="@drawable/be_a_host"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Be a Host"
-            android:layout_marginTop="16dp"
-            android:background="#00796b"
-            />
-        <Button
-            android:id="@+id/stats"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="bottom"
+            android:paddingLeft="10dp"/>
+    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorPrimaryDark"/>
+    <FrameLayout
+        android:id="@+id/home_search_nearby"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/search_nearby"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Upcoming Meals"
-            android:layout_marginTop="16dp"
-            android:background="#00796b"
+            android:text="Search Nearby"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="bottom"
+            android:paddingLeft="10dp"/>
+
+    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorPrimaryDark"/>
+    <FrameLayout
+        android:id="@+id/home_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/profile"
             />
-    </LinearLayout>
-</RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="bottom"
+            android:paddingLeft="10dp"/>
+    </FrameLayout>
+
+
+</LinearLayout>

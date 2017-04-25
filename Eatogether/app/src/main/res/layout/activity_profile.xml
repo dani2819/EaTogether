@@ -43,7 +43,7 @@
             android:id="@+id/profile_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/ic_restaurants"
+            android:src="@drawable/default_profile_image"
             app:civ_border_width="0.5dp"
             app:civ_border_color="@color/primary_dark"
             android:layout_gravity="center_horizontal"/>
@@ -123,26 +123,22 @@
             android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
             />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="History"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_marginTop="20dp"/>
-
-
-        <LinearLayout
-            android:id="@+id/profile_history_holder"
+        <Button
+            android:id="@+id/profile_show_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="Show my Stats"
+            android:layout_marginTop="30dp"
+            android:onClick="onClick"/>
 
-            <include layout="@layout/history_records_layout" />
-            <include layout="@layout/history_records_layout" />
-            <include layout="@layout/history_records_layout" />
+        <Button
+            android:id="@+id/profile_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_marginTop="10dp"
+            android:onClick="onClick"/>
 
-            </LinearLayout>
 
     </LinearLayout>
         </LinearLayout>

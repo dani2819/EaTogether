@@ -68,6 +68,7 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
         //new DownloadImageTask((ImageView) findViewById(R.id.imgView))
         //  .execute("https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.png");
 
+        mGoogleApiClient = LoginActivity.mGoogleApiClient;
 
 
 
@@ -89,13 +90,14 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
 
     private void initializeListeners() {
         // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
-                    .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
-                    .build();
-        }
+        //if (mGoogleApiClient == null) {
+        mGoogleApiClient = null;
+         mGoogleApiClient = new GoogleApiClient.Builder(this)
+                 .addApi(LocationServices.API)
+                 .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) this)
+                 .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
+                 .build();
+        //}
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -316,7 +318,6 @@ public class SearchActivity extends Activity implements GoogleApiClient.Connecti
                                     int position, long id) {
                 // TODO Auto-generated method stub
                 String foodID= food_ids[+position];
-                Toast.makeText(getApplicationContext(), foodID, Toast.LENGTH_SHORT).show();
 
                 Intent newActivity = new Intent(getApplicationContext(), FoodEventActivity.class);
                 newActivity.putExtra("foodID", foodID);

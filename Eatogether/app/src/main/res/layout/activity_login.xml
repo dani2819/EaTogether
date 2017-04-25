@@ -81,14 +81,19 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/google_sign_in_button"
                 style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:text="@string/action_google_sign_in"
                 android:textStyle="bold"
+                android:layout_weight="1"
                 />
 
             <com.facebook.login.widget.LoginButton
@@ -96,17 +101,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="15dp"
+                android:visibility="gone"/>
 
-            <TextView
-                android:id="@+id/btn_forgot_pass"
+            <Button
+                android:id="@+id/btn_signup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Forgot Password?"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="160dp"
-                android:textColor="@color/Blue"
-                android:clickable="true"/>
+                android:text="Sign Up"
+                android:layout_gravity="bottom|center_horizontal"
+                android:clickable="true"
+                android:layout_weight="1"/>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

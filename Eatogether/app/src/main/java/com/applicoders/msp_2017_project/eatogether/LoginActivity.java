@@ -66,10 +66,12 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.applicoders.msp_2017_project.eatogether.Constants.CONTEXT;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGIN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
@@ -104,19 +106,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private CallbackManager callbackManager;
     private  LoginButton loginButton;
     private TextView mForgotPassword;
+    private Button mSignUp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CONTEXT = getApplicationContext();
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 //        facebookSDKInitialize();
         setContentView(R.layout.activity_login);
 
         String temp_Token = SharedPrefHandler.getStoredPref(getApplicationContext(), TOKEN_PREF);
-        Toast.makeText(this, temp_Token, Toast.LENGTH_LONG).show();
         if(!TextUtils.isEmpty(temp_Token)){
-            TOKEN = temp_Token;
+            TOKEN = SharedPrefHandler.getStoredPref(getApplicationContext(), TOKEN_PREF);
             Intent newActivity = new Intent(LoginActivity.this, HomeActivity.class);
+            newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(newActivity);
         }
         facebookSDKInitialize();
@@ -164,13 +168,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        mForgotPassword = (TextView) findViewById(R.id.btn_forgot_pass);
+//        mForgotPassword = (TextView) findViewById(R.id.btn_forgot_pass);
+//
+//        mForgotPassword.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent newactivity = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+//                startActivity(newactivity);
+//            }
+//        });
 
-        mForgotPassword.setOnClickListener(new OnClickListener() {
+        mSignUp = (Button) findViewById(R.id.btn_signup);
+        mSignUp.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent newactivity = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
-                startActivity(newactivity);
+                Intent newActivity = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(newActivity);
             }
         });
 
@@ -483,14 +496,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-//            String personName = acct.getDisplayName();
-//            String personGivenName = acct.getGivenName();
-//            String personFamilyName = acct.getFamilyName();
-//            String personEmail = acct.getEmail();
-//            String personId = acct.getId();
-//            Uri personPhoto = acct.getPhotoUrl();
+            String personName = acct.getDisplayName();
+            String personGivenName = acct.getGivenName();
+            String personFamilyName = acct.getFamilyName();
+            String personEmail = acct.getEmail();
+            String personId = acct.getId();
+            Uri personPhoto = acct.getPhotoUrl();
+
+
             Toast.makeText(this, "Signed-In", Toast.LENGTH_LONG).show();
-            Intent newactivity = new Intent(this, HomeActivity.class);
+            Intent newactivity = new Intent(this, SignUpActivity.class);
+            newactivity.putExtra("firstname", personGivenName);
+            newactivity.putExtra("lastname", personFamilyName);
+            newactivity.putExtra("email", personEmail);
+            newactivity.putExtra("isGoogle", true);
             startActivity(newactivity);
 
         } else {

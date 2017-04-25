@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.applicoders.msp_2017_project.eatogether.AsyncTasks.GetOneUserTask;
@@ -34,7 +36,7 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.User_Last_Na
 import static com.applicoders.msp_2017_project.eatogether.Constants.User_Phone_PREF;
 
 
-public class ProfileActivity extends AppCompatActivity implements TaskDone {
+public class ProfileActivity extends AppCompatActivity implements TaskDone, View.OnClickListener {
 
     private GetUserDataTask mAuthTask = null;
     private GetOneUserTask getOneUserTask = null;
@@ -46,13 +48,14 @@ public class ProfileActivity extends AppCompatActivity implements TaskDone {
     FloatingActionButton editProfileBtn;
     TextView profileName, profileDescription, profileEmail, profilePhone;
     ImageView profileImage, genderImage;
+    Button LogoutButton, ShowStatsButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         context = this;
 
-
+        TOKEN = SharedPrefHandler.getStoredPref(this, TOKEN_PREF);
 
         mProfileView= findViewById(R.id.profile_layout);
         mProgressView = findViewById(R.id.profile_progress);
@@ -64,6 +67,8 @@ public class ProfileActivity extends AppCompatActivity implements TaskDone {
         genderImage = (ImageView) findViewById(R.id.profile_genderImage);
         profileEmail = (TextView) findViewById(R.id.profile_email);
         profilePhone =(TextView) findViewById(R.id.profile_phone);
+        LogoutButton = (Button) findViewById(R.id.profile_logout);
+        ShowStatsButton = (Button) findViewById(R.id.profile_show_stats);
         editProfileBtn = (FloatingActionButton) findViewById(R.id.profile_edit);
         editProfileBtn.setVisibility(View.GONE);
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
@@ -164,10 +169,14 @@ public class ProfileActivity extends AppCompatActivity implements TaskDone {
             profileEmail.setVisibility(View.GONE);
             profilePhone.setVisibility(View.GONE);
             editProfileBtn.setVisibility(View.GONE);
+            LogoutButton.setVisibility(View.GONE);
+            ShowStatsButton.setVisibility(View.GONE);
         } else {
             profileEmail.setVisibility(View.VISIBLE);
             profilePhone.setVisibility(View.VISIBLE);
             editProfileBtn.setVisibility(View.VISIBLE);
+            LogoutButton.setVisibility(View.VISIBLE);
+            ShowStatsButton.setVisibility(View.VISIBLE);
         }
 
         showProgress(false);
@@ -217,5 +226,27 @@ public class ProfileActivity extends AppCompatActivity implements TaskDone {
     @Override
     public void FoodEventTaskDone(String Data) {
 
+    }
+
+    private void Logout(){
+        TOKEN = "";
+        SharedPrefHandler.StorePref(this, TOKEN_PREF, "");
+        Intent newActivity = new Intent(this, LoginActivity.class);
+        newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(newActivity);
+    }
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.profile_logout:
+                Logout();
+                break;
+
+            case R.id.profile_show_stats:
+                // TODO: SHOW STATS
+                Intent newActivity = new Intent(this, StatsMainActivity.class);
+                startActivity(newActivity);
+                break;
+        }
     }
 }

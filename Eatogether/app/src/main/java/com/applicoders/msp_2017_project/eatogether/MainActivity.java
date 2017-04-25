@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Application;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,12 +33,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.applicoders.msp_2017_project.eatogether.CustomViews.CustomEditText;
+import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements PlaceSelectionListener {
 
@@ -80,12 +87,12 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         appBarLayout.setExpanded(false);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
-        collapsingToolbar.setTitle("Testing");
+//        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
+//        collapsingToolbar.setTitle("Testing");
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -109,12 +116,12 @@ public class MainActivity extends AppCompatActivity implements PlaceSelectionLis
         });
 
         // Retrieve the PlaceAutocompleteFragment.
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Register a listener to receive callbacks when a place has been selected or an error has
         // occurred.
-        autocompleteFragment.setOnPlaceSelectedListener(this);
+//        autocompleteFragment.setOnPlaceSelectedListener(this);
 
     }
 

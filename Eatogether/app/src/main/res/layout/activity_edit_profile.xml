@@ -44,7 +44,7 @@
                     android:id="@+id/edit_profile_image"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:src="@drawable/ic_restaurants"
+                    android:src="@drawable/default_profile_image"
                     app:civ_border_width="0.5dp"
                     app:civ_border_color="@color/primary_dark"
                     android:layout_gravity="center_horizontal"/>
