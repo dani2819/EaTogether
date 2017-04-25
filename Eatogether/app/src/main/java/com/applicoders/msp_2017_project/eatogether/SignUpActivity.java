@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.applicoders.msp_2017_project.eatogether.UtilityClasses.SharedPrefHandler;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.storage.FirebaseStorage;
@@ -46,6 +47,7 @@ import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOU
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_LOGOUT;
 import static com.applicoders.msp_2017_project.eatogether.Constants.SERVER_RESOURCE_SIGNUP;
 import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN;
+import static com.applicoders.msp_2017_project.eatogether.Constants.TOKEN_PREF;
 
 import com.applicoders.msp_2017_project.eatogether.UtilityClasses.Md5Hash;
 import com.applicoders.msp_2017_project.eatogether.HttpClasses.GenHttpConnection;
@@ -100,6 +102,13 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    public void GotoHome(String token){
+        SharedPrefHandler.StorePref(this, TOKEN_PREF, token);
+        TOKEN = token;
+        Intent newActivity = new Intent(this, HomeActivity.class);
+        newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(newActivity);
+    }
     private void attemptSignUp() {
         if (mAuthTask != null) {
             return;
@@ -302,12 +311,9 @@ public class SignUpActivity extends AppCompatActivity {
                     TOKEN = jsonObj.getString("message");
                     Log.e("Token: ", TOKEN.toString());
                     mSignUpFormView.setVisibility(View.GONE);
-                    // TODO: Store token and Start New Activity.
-                    Intent newActivity = new Intent(getParent(), HomeActivity.class);
-                    newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(newActivity);
+                    GotoHome(TOKEN);
                 } else {
-                    Toast.makeText(getParent(), jsonObj.getString("message"), Toast.LENGTH_LONG).show();
+                    Toast.makeText((SignUpActivity) getParent(), jsonObj.getString("message"), Toast.LENGTH_LONG).show();
                 }
 
 

@@ -85,6 +85,11 @@ public class HostActivity extends AppCompatActivity implements PlaceSelectionLis
         LatLng = place.getLatLng().toString();
     }
 
+    public void GotoHome(){
+        Intent newActivity = new Intent(this, HomeActivity.class);
+        newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(newActivity);
+    }
     @Override
     public void onError(Status status) {
         Log.i("DEBUG", "ERROR");
@@ -182,9 +187,7 @@ public class HostActivity extends AppCompatActivity implements PlaceSelectionLis
         protected void onPostExecute(String result) {
             Log.i("A", "Backend response: " + result);
             Toast.makeText(getApplicationContext(), "Created Successfully", Toast.LENGTH_LONG).show();
-            Intent newActivity = new Intent(getParent(), HomeActivity.class);
-            newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(newActivity);
+            GotoHome();
             /*mAuthTask = null;
             showProgress(false);
             try{
