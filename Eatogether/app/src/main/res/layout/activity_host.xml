@@ -11,6 +11,14 @@
         android:orientation="vertical"
         android:padding="16dp"
         >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Be a Host"
+            android:gravity="center"
+            android:textSize="35dp"/>
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

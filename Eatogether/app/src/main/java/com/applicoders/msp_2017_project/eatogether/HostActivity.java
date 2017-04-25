@@ -2,6 +2,7 @@ package com.applicoders.msp_2017_project.eatogether;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -181,6 +182,9 @@ public class HostActivity extends AppCompatActivity implements PlaceSelectionLis
         protected void onPostExecute(String result) {
             Log.i("A", "Backend response: " + result);
             Toast.makeText(getApplicationContext(), "Created Successfully", Toast.LENGTH_LONG).show();
+            Intent newActivity = new Intent(getParent(), HomeActivity.class);
+            newActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(newActivity);
             /*mAuthTask = null;
             showProgress(false);
             try{
