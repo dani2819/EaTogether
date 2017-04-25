@@ -1,6 +1,7 @@
 package com.applicoders.msp_2017_project.eatogether;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -159,13 +161,25 @@ public class FirstFragment extends Fragment {
 
             String[] dishes_titles = (String[]) itemnames.toArray(new String[itemnames.size()]);
             String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
-            String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
+            final String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
             String[] dateArray = (String[]) dates.toArray(new String[dates.size()]);
 
             //create view here
             FragListAdapter adapter= new FragListAdapter((StatsMainActivity)getActivity(), dishes_titles, locationArray, dateArray);
 
             list.setAdapter(adapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    // TODO Auto-generated method stub
+                    String foodID= food_ids[+position];
+
+                    Intent newActivity = new Intent((StatsMainActivity) getActivity(), FoodEventActivity.class);
+                    newActivity.putExtra("foodID", foodID);
+                    startActivity(newActivity);
+                }
+            });
         }
 
         public void populatePreviousHost(JSONObject jsonObj) throws JSONException, IOException {
@@ -191,12 +205,24 @@ public class FirstFragment extends Fragment {
 
             String[] dishes_titles = (String[]) itemnames.toArray(new String[itemnames.size()]);
             String[] locationArray = (String[]) locs.toArray(new String[locs.size()]);
-            String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
+            final String[] food_ids = (String[]) ids.toArray(new String[ids.size()]);
             String[] dateArray = (String[]) dates.toArray(new String[dates.size()]);
             //create view here
             FragListAdapter2 adapter= new FragListAdapter2((StatsMainActivity)getActivity(), dishes_titles, locationArray, dateArray);
 
             list.setAdapter(adapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    // TODO Auto-generated method stub
+                    String foodID= food_ids[+position];
+
+                    Intent newActivity = new Intent((StatsMainActivity) getActivity(), FoodEventActivity.class);
+                    newActivity.putExtra("foodID", foodID);
+                    startActivity(newActivity);
+                }
+            });
 
 
         }

@@ -288,6 +288,7 @@ public class EditProfileActivity extends AppCompatActivity {
             updateTextTasl.instance = null;
             Toast.makeText(this, "Data was saved succesfully", Toast.LENGTH_LONG).show();
             Intent newActivity = new Intent(context, ProfileActivity.class);
+            newActivity.putExtra("isSelf", true);
             newActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(newActivity);
         }
